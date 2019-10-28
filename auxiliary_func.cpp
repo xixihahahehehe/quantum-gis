@@ -1,12 +1,21 @@
 #include "auxiliary_func.h"
 #include <map>
+
+
 #define PI                      3.141592654
 #define EARTH_RADIUS            6378.137        //地球近似半径
+
+std::map<auxiliary_func::tmpodcount,int> tmpmap;
+std::mutex mapmutex;
+std::mutex odmutex;
+int threadnumber=3;
 
 auxiliary_func::auxiliary_func()
 {
 
 }
+
+
 vector<string> auxiliary_func::split(const string &str, const string &delim)
 {
     vector<string> res;
@@ -92,18 +101,96 @@ double get_weight(double weight) {
     return weight;
 }
 
-struct tmpodcount
-{
-    int _OID;
-    int _DID;
-};
 
-bool operator<(tmpodcount a, tmpodcount b)
+
+bool operator<(auxiliary_func::tmpodcount a, auxiliary_func::tmpodcount b)
 {
         return a._OID < b._OID;
 }
 
-flowcollection auxiliary_func::generateFlowcollection(ODcollection od, OGRLayer * layer)
+void auxiliary_func::parallel_work(ODcollection * od,OGRLayer * layer,int start,int end)
+{
+    std::map<tmpodcount,int> tmpmap;
+    int count=0;
+    for(int i=0;i<od->CountOD();i++)
+    {
+        if(i<start||i>end)
+        {
+            continue;
+        }
+        OGRFeature *poFeature;
+        int OID=-1;
+        int DID=-1;
+        layer->ResetReading();
+        while( (poFeature = layer->GetNextFeature()) != NULL)
+        {
+            //odmutex.lock();
+            OGRPoint * origin=od->GetOD(i).Origin;
+            OGRPoint * destin=od->GetOD(i).Destin;
+            //odmutex.unlock();
+            bool containO=poFeature->GetGeometryRef()->Contains(origin);
+            bool containD=poFeature->GetGeometryRef()->Contains(destin);
+            if(containO)
+            {
+                OID=poFeature->GetFID();
+            }
+            if(containD)
+            {
+                DID=poFeature->GetFID();
+            }
+        }
+        if(OID!=-1&&DID!=-1)
+        {
+            map<tmpodcount,int>::iterator iter1;
+            tmpodcount aa;
+            aa._DID=DID;
+            aa._OID=OID;
+            iter1=tmpmap.find(aa);
+            mapmutex.lock();
+            if(iter1==tmpmap.end())
+            {
+                tmpmap[aa]=1;
+            }
+            else
+            {
+                tmpmap[aa]=tmpmap[aa]+1;
+            }
+            mapmutex.unlock();
+        }
+    }
+}
+
+
+flowcollection auxiliary_func::generateFlowcollection(ODcollection * od, OGRLayer * layer)
+{
+    threadnumber=3;
+    flowcollection tmp=flowcollection();
+    tmpmap.clear();
+    std::vector<thread * > threadpool;
+    int tasknumber=od->CountOD();
+    int tasksPerThread=tasknumber/threadnumber;
+    for(int i=0;i<threadnumber-1;i++)
+    {
+        thread * tmpt=new thread(parallel_work,od,layer,tasksPerThread*i,tasksPerThread*(i+1));
+        threadpool.push_back(tmpt);
+    }
+    //thread * tmpt2=new thread(parallel_work,od,layer,tasksPerThread*(threadnumber-1),tasknumber-1);
+    //threadpool.push_back(tmpt2);
+    //后面没问题
+    for(int i=0;i<threadpool.size();i++)
+    {
+        threadpool[i]->join();
+    }
+    map<tmpodcount, int>::iterator iter;
+    for(iter = tmpmap.begin(); iter != tmpmap.end(); iter++)
+    {
+        flowdata tmpflow=flowdata(iter->first._OID,iter->first._DID,iter->second);
+        tmp.Addflow(tmpflow);
+    }
+    tmp.setLayerConnection(layer);
+    return tmp;
+}
+/*flowcollection auxiliary_func::generateFlowcollection(ODcollection od, OGRLayer * layer)
 {
     flowcollection tmp=flowcollection();
     std::map<tmpodcount,int> tmpmap;
@@ -151,4 +238,4 @@ flowcollection auxiliary_func::generateFlowcollection(ODcollection od, OGRLayer 
     }
     tmp.setLayerConnection(layer);
     return tmp;
-}
+}*/

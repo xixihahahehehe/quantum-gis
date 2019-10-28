@@ -154,7 +154,7 @@ void MainWindow::on_actionod_shp_triggered()
     }
     OGRLayer *tmplayer=poDS->GetLayer(0);
     ODcollections.push_back(tmpodc);
-    flowcollection tmpfc=auxiliary_func::generateFlowcollection(tmpodc,tmplayer);
+    flowcollection tmpfc=auxiliary_func::generateFlowcollection(&tmpodc,tmplayer);
     tmpfc.ODconnection=&tmpodc;
     flowcollections.push_back(tmpfc);
 }
