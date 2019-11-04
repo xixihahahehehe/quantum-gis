@@ -7,6 +7,7 @@
 #include <vector>
 #include <gdal_priv.h>
 #include "visualize/flow_viz.h"
+#include "dockwidget.h"
 
 using namespace std;
 
@@ -20,14 +21,11 @@ class MainWindow : public QMainWindow
 
 public:
 
-    //流
     vector<flowcollection> flowcollections;
 
     //OD
     vector<ODcollection> ODcollections;
 
-    //这里有隐患 之后改成动态分配叭
-    //读取或生成的 layer 在这里
     list<OGRLayer *> myLayers;
     int layercount;
 
@@ -52,8 +50,11 @@ private slots:
     void on_actionweight_triggered();
     void on_actionod_shp_triggered();
 
+
+
 private:
     Ui::MainWindow *ui;
+    DockWidget *_leftbar;
 
 };
 #endif // MAINWINDOW_H

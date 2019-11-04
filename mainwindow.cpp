@@ -12,6 +12,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     layercount=0;
+
+    _leftbar=new DockWidget(this);
+    _leftbar->setMaximumWidth(200);
+    this->addDockWidget(Qt::LeftDockWidgetArea,_leftbar,Qt::Vertical);
 }
 
 MainWindow::~MainWindow()

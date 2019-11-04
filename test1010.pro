@@ -19,6 +19,7 @@ SOURCES += \
     auxiliary_func.cpp \
     collection/flowcollection.cpp \
     collection/odcollection.cpp \
+    dockwidget.cpp \
     geometries/flowdata.cpp \
     geometries/oddata.cpp \
     main.cpp \
@@ -29,6 +30,7 @@ HEADERS += \
     auxiliary_func.h \
     collection/flowcollection.h \
     collection/odcollection.h \
+    dockwidget.h \
     geometries/flowdata.h \
     geometries/oddata.h \
     mainwindow.h \
@@ -36,6 +38,7 @@ HEADERS += \
     visualize/flow_viz.h
 
 FORMS += \
+    dockwidget.ui \
     mainwindow.ui \
     visualize/flow_viz.ui
 
@@ -58,10 +61,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 #win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../../gdal_debug_x64/lib/gdal.lib
 #else:unix:!macx|win32-g++: PRE_TARGETDEPS += $$PWD/../../gdal_debug_x64/lib/libgdal.a
 
-win32: LIBS += -L$$PWD/../../gisdevelopment/newevr/gdal_debug_x64/lib/ -lgdal
 
-INCLUDEPATH += $$PWD/../../gisdevelopment/newevr/gdal_debug_x64/include
-DEPENDPATH += $$PWD/../../gisdevelopment/newevr/gdal_debug_x64/include
+unix:!macx|win32: LIBS += -LD:/gdal_debug_x64/lib/ -lgdal
 
-win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../../gisdevelopment/newevr/gdal_debug_x64/lib/gdal.lib
-else:win32-g++: PRE_TARGETDEPS += $$PWD/../../gisdevelopment/newevr/gdal_debug_x64/lib/libgdal.a
+INCLUDEPATH += D:/gdal_debug_x64/include
+DEPENDPATH += D:/gdal_debug_x64/include
+
+win32:!win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/lib/gdal.lib
+else:unix:!macx|win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/lib/libgdal.a
