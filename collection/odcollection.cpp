@@ -14,6 +14,11 @@ ODcollection::ODcollection(string filename)
 {
     string templine;
     ifstream ifs(filename);
+    vector<string> tmpfname=auxiliary_func::split(filename,"//");
+    string fullname=tmpfname.back();
+    tmpfname.clear();
+    tmpfname=auxiliary_func::split(fullname,".");
+    name=tmpfname.front();
     vector<ODdata> tempOD;
     OGRSpatialReference * myespWGS84osr=new OGRSpatialReference("");
     myespWGS84osr->SetWellKnownGeogCS("WGS84");
@@ -37,6 +42,7 @@ ODcollection::ODcollection(string filename)
                 tmpdestin->assignSpatialReference(myespWGS84osr);
                 tempOD.push_back(ODdata(tmporigin,tmpdestin));
             }
+
         } catch (...) {
         }
     }

@@ -16,6 +16,7 @@ public:
     void DeleteOD(int index);
     ODdata GetOD(int index);
     int CountOD();
+    string name;
 };
 
 #endif // ODCOLLECTION_H

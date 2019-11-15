@@ -150,5 +150,6 @@ flowcollection auxiliary_func::generateFlowcollection(ODcollection od, OGRLayer 
         tmp.Addflow(tmpflow);
     }
     tmp.setLayerConnection(layer);
+    tmp.name=od.name+"_flow";
     return tmp;
 }

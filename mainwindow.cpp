@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QDebug>
 #include <iostream>
+#include <QTableWidget>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,9 +14,16 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     layercount=0;
 
-    _leftbar=new DockWidget(this);
+    _leftbar=new MenuWidget(this);
     _leftbar->setMaximumWidth(200);
     this->addDockWidget(Qt::LeftDockWidgetArea,_leftbar,Qt::Vertical);
+
+    //_ptable=new PropertyTable(this);
+    //_ptable->setMaximumWidth(200);
+    //this->addDockWidget(Qt::RightDockWidgetArea,_ptable,Qt::Vertical);
+
+    _flowviz=new flow_viz(this);
+    this->setCentralWidget(_flowviz);
 }
 
 MainWindow::~MainWindow()
@@ -52,14 +60,6 @@ void MainWindow::on_actionflow_txt_triggered()
     for (int i=0;i<tmplayercount;i++) {
         static OGRLayer *tmp=poDS->GetLayer(i);
         myLayers.push_back(tmp);
-        if (flowcollections.size()>0)
-        {
-            flowcollections[flowcollections.size()-1].setLayerConnection(tmp);
-            _flowviz=new flow_viz(this);
-            _flowviz->get_flowcollection(flowcollections.front());
-            _flowviz->update();
-            this->setCentralWidget(_flowviz);
-        }
     }
 
 }
@@ -102,19 +102,7 @@ void MainWindow::on_actionflow_triggered()
     string cFileName=fileName.toStdString();
     if(!fileName.isNull()){
         flowcollection temp_fcollection=flowcollection(cFileName);
-        if (myLayers.size()>0)
-        {
-            temp_fcollection.setLayerConnection(myLayers.front());
-
-            _flowviz=new flow_viz(this);
-            _flowviz->get_flowcollection(temp_fcollection);
-            this->setCentralWidget(_flowviz);
-            _flowviz->update();
-        }
         flowcollections.push_back(temp_fcollection);
-
-
-
     }
     else{
         qDebug()<<"取消";
@@ -136,13 +124,21 @@ n
 
 void MainWindow::on_actionod_shp_triggered()
 {
+    open_odshp *open=new open_odshp;
+    open->exec();
     QString fileName;
+    fileName=open->get_od_filename();
+    QString fileName2;
+    fileName2=open->get_shp_filename();
+    string cFileName=fileName.toStdString();
+    string cFileName2=fileName2.toStdString();
+    /*QString fileName;
     fileName=QFileDialog::getOpenFileName(this,tr("OD文件"),"",tr("text(*.txt)"));
     string cFileName=fileName.toStdString();
 
     QString fileName2;
     fileName2=QFileDialog::getOpenFileName(this,tr("图层文件"),"",tr("shapefile(*.shp)"));
-    string cFileName2=fileName2.toStdString();
+    string cFileName2=fileName2.toStdString();*/
 
     ODcollection tmpodc=ODcollection(cFileName);
 
@@ -160,5 +156,52 @@ void MainWindow::on_actionod_shp_triggered()
     ODcollections.push_back(tmpodc);
     flowcollection tmpfc=auxiliary_func::generateFlowcollection(tmpodc,tmplayer);
     tmpfc.ODconnection=&tmpodc;
+
     flowcollections.push_back(tmpfc);
+
+    _flowviz->set_flowcollection(&flowcollections.front());
+    _flowviz->repaint();
+
+    base_list<<flowcollections.front().layerConnection->GetName();
+    char chod[100];
+    strcpy(chod,ODcollections.front().name.c_str());
+    od_list<<chod;
+    char chflow[100];
+    strcpy(chflow,flowcollections.front().name.c_str());
+    flow_list<<chflow;
+    _leftbar->update_menu(od_list,flow_list,base_list);
+
+
+    //_ptable->update_table(flowcollections.front().layerConnection);
+    OGRLayer *polayer=flowcollections.front().layerConnection;
+
+    OGRFeatureDefn *poFDefn=polayer->GetLayerDefn();
+    int n=poFDefn->GetFieldCount();
+    int m=int(polayer->GetFeatureCount());
+    QTableWidget *_table=new QTableWidget(m, n);
+    polayer->ResetReading();
+    QStringList header;
+
+    for(int i=0;i<n;i++)
+    {
+       header+=poFDefn->GetFieldDefn(i)->GetNameRef();
+    }
+    for(int i=0;i<m;i++)
+    {
+       OGRFeature *poFeature=polayer->GetNextFeature();
+       for(int j=0;j<n;j++)
+       {
+         _table->setItem(i, j, new QTableWidgetItem(QString::fromLocal8Bit(poFeature->GetFieldAsString(j))));
+       }
+     }
+       _table->setHorizontalHeaderLabels(header);
+       _table->setStyleSheet("QTableWidget::item{border:1px solid;}");
+       //_table->update();
+       _table->show();
+
+}
+
+void MainWindow::on_action_chart_triggered()
+{
+
 }

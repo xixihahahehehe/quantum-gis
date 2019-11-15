@@ -7,7 +7,10 @@
 #include <vector>
 #include <gdal_priv.h>
 #include "visualize/flow_viz.h"
-#include "dockwidget.h"
+#include "visualize/menuwidget.h"
+#include "visualize/propertytable.h"
+#include <QStringList>
+#include "dialog/open_odshp.h"
 
 using namespace std;
 
@@ -29,7 +32,7 @@ public:
     list<OGRLayer *> myLayers;
     int layercount;
 
-    flow_viz* _flowviz;
+
 
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -49,12 +52,18 @@ private slots:
 
     void on_actionweight_triggered();
     void on_actionod_shp_triggered();
+    void on_action_chart_triggered();
 
 
 
 private:
     Ui::MainWindow *ui;
-    DockWidget *_leftbar;
+    flow_viz *_flowviz;
+    MenuWidget *_leftbar;
+    //PropertyTable *_ptable;
 
+    QStringList od_list;
+    QStringList flow_list;
+    QStringList base_list;
 };
 #endif // MAINWINDOW_H

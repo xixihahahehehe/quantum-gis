@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuopen">
@@ -46,7 +46,14 @@
     <addaction name="actiondirection"/>
     <addaction name="actionweight"/>
    </widget>
+   <widget class="QMenu" name="menustatistics">
+    <property name="title">
+     <string>statistics</string>
+    </property>
+    <addaction name="action_chart"/>
+   </widget>
    <addaction name="menuopen"/>
+   <addaction name="menustatistics"/>
    <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -83,6 +90,11 @@
   <action name="actionod_shp">
    <property name="text">
     <string>od&amp;shp</string>
+   </property>
+  </action>
+  <action name="action_chart">
+   <property name="text">
+    <string>chart</string>
    </property>
   </action>
  </widget>
