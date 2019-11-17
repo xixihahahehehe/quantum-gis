@@ -20,6 +20,7 @@ SOURCES += \
     auxiliary_func.cpp \
     collection/flowcollection.cpp \
     collection/odcollection.cpp \
+    collection/flowgraph.cpp \
     dialog/open_odshp.cpp \
     geometries/flowdata.cpp \
     geometries/oddata.cpp \
@@ -27,19 +28,24 @@ SOURCES += \
     mainwindow.cpp \
     visualize/flow_viz.cpp \
     visualize/menuwidget.cpp \
-    visualize/propertytable.cpp
+    visualize/propertytable.cpp \
+    method/CalculateBtwId.cpp \
+    method/DistanceDecayPara.cpp
 
 HEADERS += \
     auxiliary_func.h \
     collection/flowcollection.h \
     collection/odcollection.h \
+    collection/flowgraph.h \
     dialog/open_odshp.h \
     geometries/flowdata.h \
     geometries/oddata.h \
     mainwindow.h \
     visualize/flow_viz.h \
     visualize/menuwidget.h \
-    visualize/propertytable.h
+    visualize/propertytable.h \
+    method/CalculateBtwId.h \
+    method/DistanceDecayPara.h
 
 FORMS += \
     dialog/open_odshp.ui \
@@ -69,3 +75,27 @@ DEPENDPATH += $$PWD/../gdal_debug_x64/include
 
 win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../gdal_debug_x64/lib/gdal.lib
 else:win32-g++: PRE_TARGETDEPS += $$PWD/../gdal_debug_x64/lib/libgdal.a
+
+win32: LIBS += -L$$PWD/../OSGeo4W/lib/ -lproj_6_1_d
+
+INCLUDEPATH += $$PWD/../OSGeo4W/include
+DEPENDPATH += $$PWD/../OSGeo4W/include
+
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../OSGeo4W/lib/proj_6_1_d.lib
+else:win32-g++: PRE_TARGETDEPS += $$PWD/../OSGeo4W/lib/libproj_6_1_d.a
+
+win32: LIBS += -L$$PWD/../GEOS/lib/ -lgeos
+
+INCLUDEPATH += $$PWD/../GEOS/include
+DEPENDPATH += $$PWD/../GEOS/include
+
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../GEOS/lib/geos.lib
+else:win32-g++: PRE_TARGETDEPS += $$PWD/../GEOS/lib/libgeos.a
+
+win32: LIBS += -L$$PWD/../igraph/lib/ -ligraph
+
+INCLUDEPATH += $$PWD/../igraph/include
+DEPENDPATH += $$PWD/../igraph/include
+
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../igraph/lib/igraph.lib
+else:win32-g++: PRE_TARGETDEPS += $$PWD/../igraph/lib/libigraph.a

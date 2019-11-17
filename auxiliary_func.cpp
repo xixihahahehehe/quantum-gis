@@ -1,5 +1,4 @@
 #include "auxiliary_func.h"
-#include <map>
 #define PI                      3.141592654
 #define EARTH_RADIUS            6378.137        //地球近似半径
 
@@ -53,44 +52,53 @@ OGRLayer * auxiliary_func::generateGrid(OGRPoint bottomleft, OGRPoint topright, 
     return templayer;
 }
 
-double get_distance(OGRPoint point1, OGRPoint point2)
+double auxiliary_func::get_distance(OGRPoint point1, OGRPoint point2)
 {
-    double radLat1 = point1.getX() * PI / 180.0;   //角度1˚ = π / 180
-    double radLat2 = point2.getX() * PI / 180.0;   //角度1˚ = π / 180
-    double a = radLat1 - radLat2;//纬度之差
-    double b = point1.getY() * PI / 180.0 - point2.getY() * PI / 180.0;  //经度之差
-    double dst = 2 * asin((sqrt(pow(sin(a / 2), 2) + cos(radLat1) * cos(radLat2) * pow(sin(b / 2), 2))));
-    dst = dst * EARTH_RADIUS;
-    dst = round(dst * 10000000) / 10000;
-    return dst;
+    struct geod_geodesic g;
+    double s12;
+    geod_init(&g, 6378137, 1/298.257223563);
+    geod_inverse(&g, point1.getX(), point1.getY(), point2.getX(), point2.getY(), &s12, 0, 0);
+    //printf("%.3f\n", s12);
+    return s12;
 }
 
-int get_angle(OGRPoint point1, OGRPoint point2)
+double auxiliary_func::get_collection_distance(int id1, int id2, OGRLayer *currentlyr)
 {
-    double x = point1.getX() - point2.getX();//t d
-    double y = point1.getY() - point2.getY();//z y
-    int angle = -1;
-    if (y == 0 && x > 0) angle = 0;
-    if (y == 0 && x < 0) angle = 180;
-    if (x == 0 && y > 0) angle = 90;
-    if (x == 0 && y < 0) angle = 270;
-    if (angle == -1)
-    {
-        OGRPoint p1(point1.getX(),point2.getY());
-        OGRPoint p2(point2.getX(),point1.getY());
-        double dislat = get_distance(p1, point2);
-        double dislng = get_distance(p2, point2);
-        if (x > 0 && y > 0) angle = atan2(dislng, dislat) / PI * 180;
-        if (x < 0 && y > 0) angle = atan2(dislat, dislng) / PI * 180 + 90;
-        if (x < 0 && y < 0) angle = atan2(dislng, dislat) / PI * 180 + 180;
-        if (x > 0 && y < 0) angle = atan2(dislat, dislng) / PI * 180 + 270;
-    }
+    OGRPoint p[2];
+    get_feature_byid(id1, &p[0], currentlyr, "centroid");
+    get_feature_byid(id2, &p[1], currentlyr, "centroid");
+    double dis;
+    dis=get_distance(p[0], p[1]);
+    return dis;
+}
+
+string auxiliary_func::get_angle(OGRPoint point1, OGRPoint point2)
+{
+    //vector <string> angle;
+    struct geod_geodesic g;
+    double s12;
+    double pazi1;
+    double pazi2;
+    geod_init(&g, 6378137, 1/298.257223563);
+    geod_inverse(&g, point1.getX(), point1.getY(), point2.getX(), point2.getY(), &s12, &pazi1, &pazi2);
+    //printf("%.3f\n", pazi1);
+    //printf("%.3f\n", pazi2);
+    string str1=to_string(pazi1);
+    string str2=to_string(pazi2);
+    string str3=str1+","+str2;
+    return str3;
+}
+
+string auxiliary_func::get_collection_angle(int id1, int id2, OGRLayer *currentlyr)
+{
+    OGRPoint p[2];
+    get_feature_byid(id1, &p[0], currentlyr, "centroid");
+    get_feature_byid(id2, &p[1], currentlyr, "centroid");
+    string angle;
+    angle=get_angle(p[0], p[1]);
     return angle;
 }
 
-double get_weight(double weight) {
-    return weight;
-}
 
 struct tmpodcount
 {
