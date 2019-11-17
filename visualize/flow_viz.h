@@ -60,6 +60,15 @@ private:
 
     void draw_flow(QPainter *painter,const QRect& paintingRect);
     virtual void paintEvent( QPaintEvent * );
+
+    void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
+
+    void extendWindowsSize();
+    void shrinkWindowsSize();
+
+    int m_originalWidth;
+    int m_originalHeight;
+
 };
 
 #endif // FLOW_VIZ_H

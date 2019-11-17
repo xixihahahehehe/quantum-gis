@@ -4,12 +4,19 @@
 #include "ogr_geometry.h"
 #include <QPainter>
 #include <QPainterPath>
+#include <QWheelEvent>
 
 flow_viz::flow_viz(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::flow_viz)
 {
     ui->setupUi(this);
+
+    this->setWindowTitle("CSDN IT1995");
+
+    m_originalWidth = this->width();
+    m_originalHeight = this->height();
+
 }
 
 flow_viz::~flow_viz()
@@ -168,3 +175,40 @@ void flow_viz::paintEvent(QPaintEvent *)
 
     _painter->end();
 }
+
+
+
+void flow_viz::wheelEvent(QWheelEvent *event)
+{
+    QWidget::wheelEvent(event);
+
+    QPoint sroll = event->angleDelta();
+    if(sroll.y() > 0)
+        extendWindowsSize();
+    else
+        shrinkWindowsSize();
+}
+
+void flow_viz::extendWindowsSize()
+{
+    if(this->width() > m_originalWidth + 300){
+
+        return;
+    }
+
+    this->setMaximumSize(this->width() + 10, this->height() + 10);
+    this->setMinimumSize(this->width() + 10, this->height() + 10);
+}
+
+void flow_viz::shrinkWindowsSize()
+{
+    if(this->width() < m_originalWidth - 300){
+
+        return;
+    }
+
+    //注意：顺序不能颠倒
+    this->setMinimumSize(this->width() - 10, this->height() - 10);
+    this->setMaximumSize(this->width() - 10, this->height() - 10);
+}
+
