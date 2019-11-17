@@ -79,17 +79,78 @@ void MainWindow::on_actionOD_triggered()
 
 void MainWindow::on_actiondistance_triggered()
 {
-
+    //    struct geod_geodesic g;
+    //    double s12;
+    //    double pazi1;
+    //    double pazi2;
+    //    geod_init(&g, 6378137, 1/298.257223563);
+    //    geod_inverse(&g, 40.64, -73.78, 1.36, 103.99, &s12,  &pazi1, &pazi2);
+    //    printf("%.3f\n", s12 );
+    //    printf("%.3f\n", pazi1 );
+    //    printf("%.3f\n", pazi2 );
+    vector<string>distancelist;
+    flowcollection a=flowcollections[0];
+    string str3;
+    for(int i=0;i<a.Countflow();i++)
+    {
+        flowdata flow=a.Getflow(i);
+        int od=flow.OID;
+        int dd=flow.DID;
+        double distance=auxiliary_func::get_collection_distance(od,dd,a.layerConnection);
+        string str_od=to_string(od);
+        string str_dd=to_string(dd);
+        string str_distance=to_string(distance);
+        str3=str_od+","+str_dd+","+str_distance;
+        distancelist.push_back(str3);
+    }
+    for(int j=0;j<distancelist.size();j++)
+    {
+        cout<<distancelist[j]<<endl;
+    }
 }
 
 void MainWindow::on_actiondirection_triggered()
 {
-
+    vector<string>directionlist;
+    flowcollection a=flowcollections[0];
+    string direction;
+    for(int i=0;i<a.Countflow();i++)
+    {
+        flowdata flow=a.Getflow(i);
+        int od=flow.OID;
+        int dd=flow.DID;
+        direction=auxiliary_func::get_collection_angle(od,dd,a.layerConnection);
+        string str_od=to_string(od);
+        string str_dd=to_string(dd);
+        string str3=str_od+","+str_dd+","+direction;
+        directionlist.push_back(str3);
+    }
+    for(int j=0;j<directionlist.size();j++)
+    {
+        cout<<directionlist[j]<<endl;
+    }
 }
 
 void MainWindow::on_actionweight_triggered()
 {
-
+    flowcollection a=flowcollections[0];
+    vector<string>weightlist;
+    for(int i=0;i<a.Countflow();i++)
+    {
+        flowdata flow=a.Getflow(i);
+        int od=flow.OID;
+        int dd=flow.DID;
+        double weight=flow.weight;
+        string str_od=to_string(od);
+        string str_dd=to_string(dd);
+        string str_weight=to_string(weight);
+        string str3=str_od+","+str_dd+","+str_weight;
+        weightlist.push_back(str3);
+    }
+    for(int j=0;j<weightlist.size();j++)
+    {
+        cout<<weightlist[j]<<endl;
+    }
 }
 #include <map>
 //读取流数据
