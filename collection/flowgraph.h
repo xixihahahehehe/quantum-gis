@@ -1,3 +1,5 @@
+#ifndef FLOWGRAPH_H
+#define FLOWGRAPH_H
 #include"flowcollection.h"
 #include <igraph.h>
 #include <stdarg.h>
@@ -10,7 +12,7 @@ public:
 	flowgraph(flowcollection* flowcol);
 	~flowgraph();
 
-	igraph_t mygraph;
+    igraph_t mygraph;
 	igraph_vector_t v_dict_to_seq; //VECTOR( v_dict_to_seq)[org_id] -> sequence id
 	igraph_vector_t v_dict_to_org; //VECTOR(v_dict_to_org)[seq_id] -> original id
 	igraph_matrix_t adja_mat;
@@ -23,6 +25,7 @@ public:
 	double diameter;
 	igraph_bool_t IsDirected; 
 	
+    void gen_flowgraph(flowcollection* flowcol);
 
 	int get_vcount();
 	int get_ecount();
@@ -37,3 +40,4 @@ public:
 
 };
 
+#endif

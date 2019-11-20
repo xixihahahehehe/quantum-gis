@@ -1,6 +1,7 @@
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += charts
 
 CONFIG += c++11
 
@@ -21,6 +22,8 @@ SOURCES += \
     collection/flowcollection.cpp \
     collection/odcollection.cpp \
     collection/flowgraph.cpp \
+    dialog/chartviewdialog.cpp \
+    dialog/gen_graph_dialog.cpp \
     dialog/open_odshp.cpp \
     geometries/flowdata.cpp \
     geometries/oddata.cpp \
@@ -37,6 +40,8 @@ HEADERS += \
     collection/flowcollection.h \
     collection/odcollection.h \
     collection/flowgraph.h \
+    dialog/chartviewdialog.h \
+    dialog/gen_graph_dialog.h \
     dialog/open_odshp.h \
     geometries/flowdata.h \
     geometries/oddata.h \
@@ -48,6 +53,8 @@ HEADERS += \
     method/DistanceDecayPara.h
 
 FORMS += \
+    dialog/chartviewdialog.ui \
+    dialog/gen_graph_dialog.ui \
     dialog/open_odshp.ui \
     mainwindow.ui \
     visualize/flow_viz.ui \
@@ -84,14 +91,6 @@ DEPENDPATH += $$PWD/../OSGeo4W/include
 win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../OSGeo4W/lib/proj_6_1_d.lib
 else:win32-g++: PRE_TARGETDEPS += $$PWD/../OSGeo4W/lib/libproj_6_1_d.a
 
-win32: LIBS += -L$$PWD/../GEOS/lib/ -lgeos
-
-INCLUDEPATH += $$PWD/../GEOS/include
-DEPENDPATH += $$PWD/../GEOS/include
-
-win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../GEOS/lib/geos.lib
-else:win32-g++: PRE_TARGETDEPS += $$PWD/../GEOS/lib/libgeos.a
-
 win32: LIBS += -L$$PWD/../igraph/lib/ -ligraph
 
 INCLUDEPATH += $$PWD/../igraph/include
@@ -99,3 +98,11 @@ DEPENDPATH += $$PWD/../igraph/include
 
 win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../igraph/lib/igraph.lib
 else:win32-g++: PRE_TARGETDEPS += $$PWD/../igraph/lib/libigraph.a
+
+unix:!macx|win32: LIBS += -L$$PWD/../geos/lib/ -lgeos_d
+
+INCLUDEPATH += $$PWD/../geos/include
+DEPENDPATH += $$PWD/../geos/include
+
+win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../geos/lib/geos_d.lib
+else:unix:!macx|win32-g++: PRE_TARGETDEPS += $$PWD/../geos/lib/libgeos_d.a

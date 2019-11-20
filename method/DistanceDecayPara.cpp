@@ -5,8 +5,8 @@ double distance_decay_parameter(flowgraph& od_graph, vector<vector<double>> &res
 	vector<int>degree;
 	od_graph.get_degree(degree);
 
-	cout << od_graph.get_degree_byid(522, 1) << endl;
-	cout << od_graph.get_flow_byid(582, 581, 0) << endl;
+//	cout << od_graph.get_degree_byid(522, 1) << endl;
+//	cout << od_graph.get_flow_byid(582, 581, 0) << endl;
 
 
 	//vector<vector<double>> res;

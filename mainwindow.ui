@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuopen">
@@ -52,7 +52,15 @@
     </property>
     <addaction name="action_chart"/>
    </widget>
+   <widget class="QMenu" name="menuPrepocessing">
+    <property name="title">
+     <string>Prepocessing</string>
+    </property>
+    <addaction name="actiongenerate_flow_collection"/>
+    <addaction name="action_generate_a_flowgraph"/>
+   </widget>
    <addaction name="menuopen"/>
+   <addaction name="menuPrepocessing"/>
    <addaction name="menustatistics"/>
    <addaction name="menu"/>
   </widget>
@@ -95,6 +103,16 @@
   <action name="action_chart">
    <property name="text">
     <string>chart</string>
+   </property>
+  </action>
+  <action name="actiongenerate_flow_collection">
+   <property name="text">
+    <string>generate flow collection</string>
+   </property>
+  </action>
+  <action name="action_generate_a_flowgraph">
+   <property name="text">
+    <string>generate a flow graph</string>
    </property>
   </action>
  </widget>

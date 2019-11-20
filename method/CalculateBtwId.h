@@ -1,3 +1,5 @@
+#ifndef CALCULATEBTWID_H
+#define CALCULATEBTWID_H
 #include<iostream>
 #include<string.h>
 #include <vector>
@@ -34,3 +36,4 @@ OGRPoint get_proj_pt(OGRPoint *p);
 // set projected coordinate system UTM 50 
 
 
+#endif

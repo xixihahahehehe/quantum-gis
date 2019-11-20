@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
+#include<QtCharts>
+QT_CHARTS_USE_NAMESPACE
 #include <QMainWindow>
 #include "collection/flowcollection.h"
 #include "collection/odcollection.h"
@@ -11,6 +12,10 @@
 #include "visualize/propertytable.h"
 #include <QStringList>
 #include "dialog/open_odshp.h"
+#include "collection/flowgraph.h"
+#include "method/DistanceDecayPara.h"
+#include "dialog/chartviewdialog.h"
+#include "dialog/gen_graph_dialog.h"
 
 using namespace std;
 
@@ -31,6 +36,7 @@ public:
 
     list<OGRLayer *> myLayers;
     int layercount;
+    flowgraph od_graph;
 
 
 
@@ -55,6 +61,8 @@ private slots:
     void on_action_chart_triggered();
 
 
+
+    void on_action_generate_a_flowgraph_triggered();
 
 private:
     Ui::MainWindow *ui;

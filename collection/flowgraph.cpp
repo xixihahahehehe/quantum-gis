@@ -97,6 +97,87 @@ flowgraph::~flowgraph()
 	cout << IGRAPH_FINALLY_STACK_SIZE() << endl;
 }
 
+void flowgraph::gen_flowgraph(flowcollection *flowcol)
+{
+    IsDirected = IGRAPH_DIRECTED;
+    layerConnection = flowcol->layerConnection;
+    int max_org_id = flowcol->Countflowid();//set initially
+    igraph_vector_init(&v_dict_to_seq, max_org_id);
+    igraph_vector_init(&v_dict_to_org, max_org_id);
+    bool contain_zero_id = FALSE;
+    flowcollection* flows = flowcol;
+    int n_flow = flows->Countflow();
+    //Initiate the dictionaries
+    for (int i = 0; i < n_flow; i++)
+    {
+        flowdata flow = flows->Getflow(i);
+        int vid = flow.OID;
+        if (vid > max_org_id)
+        {
+            max_org_id = vid;
+            igraph_vector_resize(&v_dict_to_seq, vid + 1);
+        }
+        VECTOR(v_dict_to_seq)[vid] = vid;
+
+        if (vid == 0)
+            contain_zero_id = 1;
+
+        //the same to DID
+        vid = flow.DID;
+        if (vid > max_org_id)
+        {
+            max_org_id = vid;
+            igraph_vector_resize(&v_dict_to_seq, vid + 1);
+        }
+        VECTOR(v_dict_to_seq)[vid] = vid;
+
+        if (vid == 0)
+            contain_zero_id = 1;
+
+    }
+    //Initiate dictionaries
+    int k = 0;
+    if (contain_zero_id)
+    {
+        VECTOR(v_dict_to_seq)[0] = k;
+        VECTOR(v_dict_to_org)[k] = 0;
+        k++;
+    }
+    for (int i = 1; i < igraph_vector_size(&v_dict_to_seq); i++)
+    {
+        if (VECTOR(v_dict_to_seq)[i] == 0) continue;
+        VECTOR(v_dict_to_seq)[i] = k;
+        VECTOR(v_dict_to_org)[k] = i;
+        k++;
+    }
+    max_org_id = igraph_vector_max(&v_dict_to_org);
+
+    //cout << "size of v_dict_to_seq:" << igraph_vector_size(&v_dict_to_seq) << endl
+    //	<< "size of v_dict_to_org:" << igraph_vector_size(&v_dict_to_org) << endl;
+    //
+    igraph_vector_resize_min(&v_dict_to_seq);
+    igraph_vector_resize(&v_dict_to_org, igraph_vector_max(&v_dict_to_seq) + 1);
+    //cout << "size of v_dict_to_seq:" << igraph_vector_size(&v_dict_to_seq) << endl
+    //	<< "size of v_dict_to_org:" << igraph_vector_size(&v_dict_to_org) << endl;
+
+    igraph_matrix_init(&adja_mat, igraph_vector_size(&v_dict_to_org), igraph_vector_size(&v_dict_to_org));
+    for (int i = 0; i < n_flow; i++)
+    {
+        flowdata flow = flows->Getflow(i);
+        int row = VECTOR(v_dict_to_seq)[flow.OID];
+        int col = VECTOR(v_dict_to_seq)[flow.DID];
+        MATRIX(adja_mat,row,col ) = flow.weight;
+    }
+    igraph_i_set_attribute_table(&igraph_cattribute_table);
+    igraph_weighted_adjacency(&mygraph, &adja_mat, IGRAPH_ADJ_DIRECTED, 0, /*loops=*/ 1);
+
+    //print_dict_to_org();
+    //print_dict_to_seq();
+    //print();
+    vcount = igraph_vcount(&mygraph);
+    ecount = igraph_ecount(&mygraph);
+}
+
 
 void flowgraph::print() {
 	igraph_t *g = &mygraph;
