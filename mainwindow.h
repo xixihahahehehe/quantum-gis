@@ -16,6 +16,7 @@ QT_CHARTS_USE_NAMESPACE
 #include "method/DistanceDecayPara.h"
 #include "dialog/chartviewdialog.h"
 #include "dialog/gen_graph_dialog.h"
+#include "workcontrol.h"
 
 using namespace std;
 
@@ -38,10 +39,19 @@ public:
     int layercount;
     flowgraph od_graph;
 
-
+    //workcontrol aa;
+    //workers * worker;
+    QThread workerThread;
 
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+
+public slots:
+    void handleResults(const QString &);
+signals:
+    //void operate(const QString &);
+    void operate(ODcollection od,OGRLayer * layer,flowcollection * fc);
 
 private slots:
     void on_actiontxt_triggered();

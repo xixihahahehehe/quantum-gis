@@ -6,7 +6,7 @@
 #include <QDebug>
 #include <iostream>
 #include <QTableWidget>
-
+#include <QMetaType>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -24,11 +24,34 @@ MainWindow::MainWindow(QWidget *parent)
 
     _flowviz=new flow_viz(this);
     this->setCentralWidget(_flowviz);
+    ui->statusbar->showMessage("aaaaa",0);
+
+    //deal with signals and slots
+
+    /*workcontrol() {
+        workers *worker = new workers;
+        worker->moveToThread(&workerThread);
+        connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
+        connect(this, &workcontrol::operate, worker, &workers::doWork);
+        connect(worker, &workers::resultReady, this, &workcontrol::handleResults);
+        workerThread.start();
+    }*/
+    workers *worker = new workers;
+    worker->moveToThread(&workerThread);
+    connect(&workerThread,&QThread::finished,worker,&QObject::deleteLater);
+    connect(this,&MainWindow::operate,worker,&workers::doWork);
+    connect(worker,&workers::resultReady,this,&MainWindow::handleResults);
+    workerThread.start();
+    //deal with communcations between threads
+    qRegisterMetaType<ODcollection>("ODcollection");
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    workerThread.quit();
+    workerThread.wait();
 }
 
 
@@ -37,7 +60,7 @@ void MainWindow::on_actiontxt_triggered()
 
 }
 
-//这个 是 shp 那个选项的
+//shp
 void MainWindow::on_actionflow_txt_triggered()
 {
     QString fileName;
@@ -153,8 +176,7 @@ void MainWindow::on_actionweight_triggered()
     }
 }
 #include <map>
-//读取流数据
-//读取流数据
+//read flow
 void MainWindow::on_actionflow_triggered()
 {
     int aaa=0;
@@ -168,7 +190,7 @@ void MainWindow::on_actionflow_triggered()
     else{
         qDebug()<<"取消";
     }
-    //这里 测试一下生成网格
+    //test net generation
     /*OGRLayer * aa= auxiliary_func::generateGrid(OGRPoint(0,0),OGRPoint(100,100),5);
     OGRFeature *poFeature;
 n
@@ -215,10 +237,51 @@ void MainWindow::on_actionod_shp_triggered()
     }
     OGRLayer *tmplayer=poDS->GetLayer(0);
     ODcollections.push_back(tmpodc);
-    flowcollection tmpfc=auxiliary_func::generateFlowcollection(tmpodc,tmplayer);
-    tmpfc.ODconnection=&tmpodc;
+    //cut from here
+    flowcollection eee;
+    flowcollections.push_back(eee);
+    int index=flowcollections.size()-1;
+    emit operate(tmpodc,tmplayer,&flowcollections[index]);
+    //ui->statusbar->showMessage("working",0);
+    ui->statusbar->showMessage("working");
+    eee.ODconnection=&tmpodc;
 
-    flowcollections.push_back(tmpfc);
+
+
+}
+
+void MainWindow::on_action_chart_triggered()
+{
+    ChartViewDialog dlg(this);
+    vector<vector<double>> res;
+    double b_stat = distance_decay_parameter(od_graph, res);
+    dlg.getdata(res);
+    dlg.draw();
+    dlg.exec();
+}
+
+void MainWindow::on_action_generate_a_flowgraph_triggered()
+{
+    Gen_Graph_Dialog dlg(this);
+    //dlg.exec();
+    if (dlg.exec() == QDialog::Accepted) {
+        // do something
+        flowcollection taxiflows=flowcollections[0];
+        od_graph.gen_flowgraph(&taxiflows);
+    } else {
+        // do something else
+    }
+
+}
+
+void MainWindow::handleResults(const QString & aa)
+{
+    //ui->statusbar->showMessage("work finished",0);
+    ui->statusbar->showMessage("job finished");
+    /*flowcollection tmpfc=auxiliary_func::generateFlowcollection(tmpodc,tmplayer);
+        tmpfc.ODconnection=&tmpodc;
+
+        flowcollections.push_back(tmpfc);*/
 
     _flowviz->set_flowcollection(&flowcollections.front());
     _flowviz->repaint();
@@ -259,29 +322,4 @@ void MainWindow::on_actionod_shp_triggered()
        _table->setStyleSheet("QTableWidget::item{border:1px solid;}");
        //_table->update();
        _table->show();
-
-}
-
-void MainWindow::on_action_chart_triggered()
-{
-    ChartViewDialog dlg(this);
-    vector<vector<double>> res;
-    double b_stat = distance_decay_parameter(od_graph, res);
-    dlg.getdata(res);
-    dlg.draw();
-    dlg.exec();
-}
-
-void MainWindow::on_action_generate_a_flowgraph_triggered()
-{
-    Gen_Graph_Dialog dlg(this);
-    //dlg.exec();
-    if (dlg.exec() == QDialog::Accepted) {
-        // do something
-        flowcollection taxiflows=flowcollections[0];
-        od_graph.gen_flowgraph(&taxiflows);
-    } else {
-        // do something else
-    }
-
 }
