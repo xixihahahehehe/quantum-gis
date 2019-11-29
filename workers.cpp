@@ -85,7 +85,7 @@ void workers::paldoWork(ODcollection od,OGRLayer * layer,int start,int end\
         // half and ODdata aa=od.GetOD(i);
         ODdata aa=od.GetOD(i);
         layer->ResetReading();
-        while( (poFeature = layer->GetNextFeature()) != NULL)
+        while( (poFeature = layer->GetNextFeature()) != NULL &&(OID==-1 || DID==-1))
         {
             bool containO=poFeature->GetGeometryRef()->Contains(aa.Origin);
             bool containD=poFeature->GetGeometryRef()->Contains(aa.Destin);
@@ -98,23 +98,6 @@ void workers::paldoWork(ODcollection od,OGRLayer * layer,int start,int end\
                 DID=poFeature->GetFID();
             }
         }
-        /*int featurecount=layer->GetFeatureCount();
-        int tempid=0;
-        while( tempid<featurecount &&(OID==-1 || DID==-1))
-        {
-            poFeature=layer->GetFeature(tempid);
-            bool containO=poFeature->GetGeometryRef()->Contains(aa.Origin);
-            bool containD=poFeature->GetGeometryRef()->Contains(aa.Destin);
-            if(containO)
-            {
-                OID=poFeature->GetFID();
-            }
-            if(containD)
-            {
-                DID=poFeature->GetFID();
-            }
-            tempid++;
-        }*/
 
         if(OID!=-1&&DID!=-1)
         {

@@ -398,6 +398,14 @@ void MainWindow::handlepalResults()
         flowdata tmpflow=flowdata(iter->first._OID,iter->first._DID,iter->second);
         //tmp.Addflow(tmpflow);
         tmp.Addflow(tmpflow);
+        if(tmpflow.weight<tmp.minstrength)
+        {
+            tmp.minstrength=tmpflow.weight;
+        }
+        if(tmpflow.weight>tmp.maxstrength)
+        {
+            tmp.maxstrength=tmpflow.weight;
+        }
     }
     tmp.setLayerConnection(myLayers.front());
     tmp.name=ODcollections[ODcollections.size()-1].name+"_flow";
