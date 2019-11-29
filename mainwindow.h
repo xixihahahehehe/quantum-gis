@@ -16,7 +16,8 @@ QT_CHARTS_USE_NAMESPACE
 #include "method/DistanceDecayPara.h"
 #include "dialog/chartviewdialog.h"
 #include "dialog/gen_graph_dialog.h"
-#include "workcontrol.h"
+#include "workers.h"
+#include <time.h>
 
 using namespace std;
 
@@ -41,17 +42,33 @@ public:
 
     //workcontrol aa;
     //workers * worker;
-    QThread workerThread;
 
+
+    //threads
+    QThread workerThread;
+    QThread workerThreads[4];
+
+    //shared data
+    //QMutex mutexaa;
+    int volatile datauseable=1;
+    std::map<workers::tmpodcount,int> sharedmap;
+    int finishsignal=0;
+
+    clock_t starttime,endtime;
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 
 public slots:
     void handleResults(const QString &);
+    void handlepalResults();
 signals:
     //void operate(const QString &);
     void operate(ODcollection od,OGRLayer * layer,flowcollection * fc);
+    void operate1(ODcollection,OGRLayer *,int,int,std::map<workers::tmpodcount,int> *,volatile int *);
+    void operate2(ODcollection,OGRLayer *,int,int,std::map<workers::tmpodcount,int> *,volatile int *);
+    void operate3(ODcollection,OGRLayer *,int,int,std::map<workers::tmpodcount,int> *,volatile int *);
+    void operate4(ODcollection,OGRLayer *,int,int,std::map<workers::tmpodcount,int> *,volatile int *);
 
 private slots:
     void on_actiontxt_triggered();

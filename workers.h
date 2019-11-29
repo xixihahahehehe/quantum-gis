@@ -2,6 +2,7 @@
 #define WORKERS_H
 
 #include <QObject>
+#include <QMutex>
 #include "collection/odcollection.h"
 #include "collection/flowcollection.h"
 class workers:public QObject
@@ -25,8 +26,10 @@ class workers:public QObject
         //    emit resultReady(result);
         //}
         void doWork(ODcollection,OGRLayer *,flowcollection *);
+        void paldoWork(ODcollection,OGRLayer *,int,int,std::map<tmpodcount,int> *,volatile int *);
     signals:
         void resultReady(const QString &result);
+        void palresultReady();
 
 };
 
