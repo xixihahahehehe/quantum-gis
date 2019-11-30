@@ -6,6 +6,10 @@ flowgraph::flowgraph()
 {
 	vcount = 0;
 	ecount = 0;
+    igraph_vector_init(&v_dict_to_seq, vcount);
+    igraph_vector_init(&v_dict_to_org, vcount);
+    igraph_empty(&mygraph, vcount, IsDirected);
+
 	layerConnection = NULL;
 }
 flowgraph::flowgraph(flowcollection* flowcol)
