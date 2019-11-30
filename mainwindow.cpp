@@ -6,6 +6,9 @@
 #include <QDebug>
 #include <iostream>
 #include <QTableWidget>
+#include <QMetaType>
+#include <time.h>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -24,11 +27,58 @@ MainWindow::MainWindow(QWidget *parent)
 
     _flowviz=new flow_viz(this);
     this->setCentralWidget(_flowviz);
+    ui->statusbar->showMessage("aaaaa",0);
+
+    //deal with signals and slots
+
+    /*workcontrol() {
+        workers *worker = new workers;
+        worker->moveToThread(&workerThread);
+        connect(&workerThread, &QThread::finished, worker, &QObject::deleteLater);
+        connect(this, &workcontrol::operate, worker, &workers::doWork);
+        connect(worker, &workers::resultReady, this, &workcontrol::handleResults);
+        workerThread.start();
+    }*/
+    //single qthread
+    workers *worker = new workers;
+    worker->moveToThread(&workerThread);
+    connect(&workerThread,&QThread::finished,worker,&QObject::deleteLater);
+    connect(this,&MainWindow::operate,worker,&workers::doWork);
+    connect(worker,&workers::resultReady,this,&MainWindow::handleResults);
+    workerThread.start();
+
+    workers * workersaa[4];
+    //multi qthreads
+    for (int i=0;i<4;i++)
+    {
+        workersaa[i]=new workers;
+        workersaa[i]->moveToThread(&workerThreads[i]);
+        connect(&workerThreads[i],&QThread::finished,workersaa[i],&QObject::deleteLater);
+        connect(workersaa[i],&workers::palresultReady,this,&MainWindow::handlepalResults);
+    }
+    connect(this,&MainWindow::operate1,workersaa[0],&workers::paldoWork);
+    connect(this,&MainWindow::operate2,workersaa[1],&workers::paldoWork);
+    connect(this,&MainWindow::operate3,workersaa[2],&workers::paldoWork);
+    connect(this,&MainWindow::operate4,workersaa[3],&workers::paldoWork);
+    for (int i=0;i<4;i++)
+    {
+        workerThreads[i].start();
+    }
+    //deal with communcations between threads
+    qRegisterMetaType<ODcollection>("ODcollection");
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    workerThread.quit();
+    workerThread.wait();
+    for (int i=0;i<4;i++)
+    {
+        workerThreads[i].quit();
+        workerThreads[i].wait();
+    }
 }
 
 
@@ -37,7 +87,7 @@ void MainWindow::on_actiontxt_triggered()
 
 }
 
-//这个 是 shp 那个选项的
+//shp
 void MainWindow::on_actionflow_txt_triggered()
 {
     QString fileName;
@@ -153,8 +203,7 @@ void MainWindow::on_actionweight_triggered()
     }
 }
 #include <map>
-//读取流数据
-//读取流数据
+//read flow
 void MainWindow::on_actionflow_triggered()
 {
     int aaa=0;
@@ -168,7 +217,7 @@ void MainWindow::on_actionflow_triggered()
     else{
         qDebug()<<"取消";
     }
-    //这里 测试一下生成网格
+    //test net generation
     /*OGRLayer * aa= auxiliary_func::generateGrid(OGRPoint(0,0),OGRPoint(100,100),5);
     OGRFeature *poFeature;
 n
@@ -213,12 +262,164 @@ void MainWindow::on_actionod_shp_triggered()
         printf( "Open failed.\n" );
         exit( 1 );
     }
-    OGRLayer *tmplayer=poDS->GetLayer(0);
-    ODcollections.push_back(tmpodc);
-    flowcollection tmpfc=auxiliary_func::generateFlowcollection(tmpodc,tmplayer);
-    tmpfc.ODconnection=&tmpodc;
 
-    flowcollections.push_back(tmpfc);
+    GDALDataset *poDS2;
+    poDS2 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+    GDALDataset *poDS3;
+    poDS3 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+    GDALDataset *poDS4;
+    poDS4= (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+
+    OGRLayer *tmplayer=poDS->GetLayer(0);
+    OGRLayer *tmplayer2=poDS2->GetLayer(0);
+    OGRLayer *tmplayer3=poDS3->GetLayer(0);
+    OGRLayer *tmplayer4=poDS4->GetLayer(0);
+    /*int aaa=sizeof(tmplayer);
+    string hehe=to_string(aaa);
+    QString haha=QString::fromStdString(hehe);
+    QMessageBox::information(this,"提示",haha);*/
+    //OGRLayer * tmplayer2=poDS->CopyLayer(tmplayer,tmplayer->GetName());
+    //OGRLayer * tmplayer3=poDS->CopyLayer(tmplayer,tmplayer->GetName());
+    //OGRLayer * tmplayer4=poDS->CopyLayer(tmplayer,tmplayer->GetName());
+
+    myLayers.push_back(tmplayer);
+    ODcollections.push_back(tmpodc);
+    //cut from here
+    //flowcollection eee;
+    //flowcollections.push_back(eee);
+    int index=flowcollections.size()-1;
+
+    //single qthread
+    //emit operate(tmpodc,tmplayer,&flowcollections[index]);
+
+    //ui->statusbar->showMessage("working",0);
+    ui->statusbar->showMessage("working");
+    //eee.ODconnection=&tmpodc;
+    finishsignal=0;
+    starttime=clock();
+    //multi qthreads
+    int odcount=tmpodc.CountOD();
+    int numperthread=odcount/4;
+    emit operate1(tmpodc,tmplayer,numperthread*0,numperthread*1,&sharedmap,&datauseable);
+    emit operate2(tmpodc,tmplayer2,numperthread*1,numperthread*2,&sharedmap,&datauseable);
+    emit operate3(tmpodc,tmplayer3,numperthread*2,numperthread*3,&sharedmap,&datauseable);
+    emit operate4(tmpodc,tmplayer4,numperthread*3,odcount,&sharedmap,&datauseable);
+}
+
+void MainWindow::on_action_chart_triggered()
+{
+    ChartViewDialog dlg(this);
+    vector<vector<double>> res;
+    double b_stat = distance_decay_parameter(od_graph, res);
+    dlg.getdata(res);
+    dlg.draw();
+    dlg.exec();
+}
+
+void MainWindow::on_action_generate_a_flowgraph_triggered()
+{
+    Gen_Graph_Dialog dlg(this);
+    //dlg.exec();
+    if (dlg.exec() == QDialog::Accepted) {
+        // do something
+        flowcollection taxiflows=flowcollections[0];
+        od_graph.gen_flowgraph(&taxiflows);
+    } else {
+        // do something else
+    }
+
+}
+
+void MainWindow::handleResults(const QString & aa)
+{
+    //ui->statusbar->showMessage("work finished",0);
+    endtime=clock();
+    int timecost=endtime-starttime;
+    string message="job finished,time cost "+to_string(timecost)+"ms";
+    QString qmessage=QString::fromStdString(message);
+    ui->statusbar->showMessage(qmessage);
+    /*flowcollection tmpfc=auxiliary_func::generateFlowcollection(tmpodc,tmplayer);
+        tmpfc.ODconnection=&tmpodc;
+
+        flowcollections.push_back(tmpfc);*/
+
+    _flowviz->set_flowcollection(&flowcollections.front());
+    _flowviz->repaint();
+
+    base_list<<flowcollections.front().layerConnection->GetName();
+    char chod[100];
+    strcpy(chod,ODcollections.front().name.c_str());
+    od_list<<chod;
+    char chflow[100];
+    strcpy(chflow,flowcollections.front().name.c_str());
+    flow_list<<chflow;
+    _leftbar->update_menu(od_list,flow_list,base_list);
+
+
+    //_ptable->update_table(flowcollections.front().layerConnection);
+    OGRLayer *polayer=flowcollections.front().layerConnection;
+
+    OGRFeatureDefn *poFDefn=polayer->GetLayerDefn();
+    int n=poFDefn->GetFieldCount();
+    int m=int(polayer->GetFeatureCount());
+    QTableWidget *_table=new QTableWidget(m, n);
+    polayer->ResetReading();
+    QStringList header;
+
+    for(int i=0;i<n;i++)
+    {
+       header+=poFDefn->GetFieldDefn(i)->GetNameRef();
+    }
+    for(int i=0;i<m;i++)
+    {
+       OGRFeature *poFeature=polayer->GetNextFeature();
+       for(int j=0;j<n;j++)
+       {
+         _table->setItem(i, j, new QTableWidgetItem(QString::fromLocal8Bit(poFeature->GetFieldAsString(j))));
+       }
+     }
+       _table->setHorizontalHeaderLabels(header);
+       _table->setStyleSheet("QTableWidget::item{border:1px solid;}");
+       //_table->update();
+       _table->show();
+}
+void MainWindow::handlepalResults()
+{
+    //QMessageBox::information(this,"aaaa","eeeee");
+    finishsignal++;
+    if(finishsignal<4)
+    {
+        return;
+    }
+    map<workers::tmpodcount, int>::iterator iter;
+    flowcollection tmp;
+    for(iter = sharedmap.begin(); iter != sharedmap.end(); iter++)
+    {
+        flowdata tmpflow=flowdata(iter->first._OID,iter->first._DID,iter->second);
+        //tmp.Addflow(tmpflow);
+        tmp.Addflow(tmpflow);
+        if(tmpflow.weight<tmp.minstrength)
+        {
+            tmp.minstrength=tmpflow.weight;
+        }
+        if(tmpflow.weight>tmp.maxstrength)
+        {
+            tmp.maxstrength=tmpflow.weight;
+        }
+    }
+    tmp.setLayerConnection(myLayers.front());
+    tmp.name=ODcollections[ODcollections.size()-1].name+"_flow";
+    tmp.ODconnection=&ODcollections[ODcollections.size()-1];
+    flowcollections.push_back(tmp);
+    endtime=clock();
+    int timecost=endtime-starttime;
+    string message="job finished,time cost "+to_string(timecost)+"ms";
+    QString qmessage=QString::fromStdString(message);
+    ui->statusbar->showMessage(qmessage);
+    /*flowcollection tmpfc=auxiliary_func::generateFlowcollection(tmpodc,tmplayer);
+        tmpfc.ODconnection=&tmpodc;
+
+        flowcollections.push_back(tmpfc);*/
 
     _flowviz->set_flowcollection(&flowcollections.front());
     _flowviz->repaint();
@@ -260,28 +461,7 @@ void MainWindow::on_actionod_shp_triggered()
        //_table->update();
        _table->show();
 
-}
-
-void MainWindow::on_action_chart_triggered()
-{
-    ChartViewDialog dlg(this);
-    vector<vector<double>> res;
-    double b_stat = distance_decay_parameter(od_graph, res);
-    dlg.getdata(res);
-    dlg.draw();
-    dlg.exec();
-}
-
-void MainWindow::on_action_generate_a_flowgraph_triggered()
-{
-    Gen_Graph_Dialog dlg(this);
-    //dlg.exec();
-    if (dlg.exec() == QDialog::Accepted) {
-        // do something
-        flowcollection taxiflows=flowcollections[0];
-        od_graph.gen_flowgraph(&taxiflows);
-    } else {
-        // do something else
-    }
-
+        /*tmp.setLayerConnection(layer);
+        tmp.name=od.name+"_flow";
+        return tmp;*/
 }

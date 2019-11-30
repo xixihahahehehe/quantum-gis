@@ -28,7 +28,8 @@ public:
     flowdata Getflow(int index);
     int Countflow();
     void setLayerConnection(OGRLayer *);
-
+    double minstrength=2147483647;
+    double maxstrength=-1;
     //new added
 
 
