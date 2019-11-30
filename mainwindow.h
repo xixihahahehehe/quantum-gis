@@ -16,7 +16,7 @@ QT_CHARTS_USE_NAMESPACE
 #include "method/DistanceDecayPara.h"
 #include "dialog/chartviewdialog.h"
 #include "dialog/gen_graph_dialog.h"
-#include "workers.h"
+#include "threads/workers.h"
 #include <time.h>
 
 using namespace std;
@@ -31,6 +31,7 @@ class MainWindow : public QMainWindow
 
 public:
 
+    vector<GDALDataset*> myGDAlDatasets;
     vector<flowcollection> flowcollections;
 
     //OD

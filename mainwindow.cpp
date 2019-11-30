@@ -79,6 +79,10 @@ MainWindow::~MainWindow()
         workerThreads[i].quit();
         workerThreads[i].wait();
     }
+
+    for(int i=0;i<myGDAlDatasets.size();i++)
+        GDALClose(myGDAlDatasets[i]);
+
 }
 
 
@@ -101,6 +105,7 @@ void MainWindow::on_actionflow_txt_triggered()
     GDALDataset *poDS;
 
     poDS = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+    myGDAlDatasets.push_back(poDS);
     if( poDS == NULL )
     {
         printf( "Open failed.\n" );
@@ -211,7 +216,7 @@ void MainWindow::on_actionflow_triggered()
     fileName=QFileDialog::getOpenFileName(this,tr("文件"),"",tr("text(*.txt)"));
     string cFileName=fileName.toStdString();
     if(!fileName.isNull()){
-        flowcollection temp_fcollection=flowcollection(cFileName);
+        flowcollection temp_fcollection=flowcollection(cFileName,true," ");
         flowcollections.push_back(temp_fcollection);
     }
     else{
@@ -262,13 +267,17 @@ void MainWindow::on_actionod_shp_triggered()
         printf( "Open failed.\n" );
         exit( 1 );
     }
+    myGDAlDatasets.push_back(poDS);
 
     GDALDataset *poDS2;
     poDS2 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+    myGDAlDatasets.push_back(poDS2);
     GDALDataset *poDS3;
     poDS3 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+    myGDAlDatasets.push_back(poDS3);
     GDALDataset *poDS4;
     poDS4= (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+    myGDAlDatasets.push_back(poDS4);
 
     OGRLayer *tmplayer=poDS->GetLayer(0);
     OGRLayer *tmplayer2=poDS2->GetLayer(0);
@@ -304,30 +313,6 @@ void MainWindow::on_actionod_shp_triggered()
     emit operate2(tmpodc,tmplayer2,numperthread*1,numperthread*2,&sharedmap,&datauseable);
     emit operate3(tmpodc,tmplayer3,numperthread*2,numperthread*3,&sharedmap,&datauseable);
     emit operate4(tmpodc,tmplayer4,numperthread*3,odcount,&sharedmap,&datauseable);
-}
-
-void MainWindow::on_action_chart_triggered()
-{
-    ChartViewDialog dlg(this);
-    vector<vector<double>> res;
-    double b_stat = distance_decay_parameter(od_graph, res);
-    dlg.getdata(res);
-    dlg.draw();
-    dlg.exec();
-}
-
-void MainWindow::on_action_generate_a_flowgraph_triggered()
-{
-    Gen_Graph_Dialog dlg(this);
-    //dlg.exec();
-    if (dlg.exec() == QDialog::Accepted) {
-        // do something
-        flowcollection taxiflows=flowcollections[0];
-        od_graph.gen_flowgraph(&taxiflows);
-    } else {
-        // do something else
-    }
-
 }
 
 void MainWindow::handleResults(const QString & aa)

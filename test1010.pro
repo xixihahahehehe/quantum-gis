@@ -29,6 +29,8 @@ SOURCES += \
     geometries/oddata.cpp \
     main.cpp \
     mainwindow.cpp \
+    mainwindow_graphrelated.cpp \
+    threads/workers.cpp \
     visualize/flow_viz.cpp \
     visualize/menuwidget.cpp \
     visualize/propertytable.cpp \
@@ -46,6 +48,7 @@ HEADERS += \
     geometries/flowdata.h \
     geometries/oddata.h \
     mainwindow.h \
+    threads/workers.h \
     visualize/flow_viz.h \
     visualize/menuwidget.h \
     visualize/propertytable.h \
