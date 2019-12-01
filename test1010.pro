@@ -22,6 +22,7 @@ SOURCES += \
     collection/flowcollection.cpp \
     collection/odcollection.cpp \
     collection/flowgraph.cpp \
+    dialog/bindingdialog.cpp \
     dialog/chartviewdialog.cpp \
     dialog/gen_graph_dialog.cpp \
     dialog/open_odshp.cpp \
@@ -42,6 +43,7 @@ HEADERS += \
     collection/flowcollection.h \
     collection/odcollection.h \
     collection/flowgraph.h \
+    dialog/bindingdialog.h \
     dialog/chartviewdialog.h \
     dialog/gen_graph_dialog.h \
     dialog/open_odshp.h \
@@ -56,6 +58,7 @@ HEADERS += \
     method/DistanceDecayPara.h
 
 FORMS += \
+    dialog/bindingdialog.ui \
     dialog/chartviewdialog.ui \
     dialog/gen_graph_dialog.ui \
     dialog/open_odshp.ui \

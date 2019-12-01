@@ -16,6 +16,7 @@ QT_CHARTS_USE_NAMESPACE
 #include "method/DistanceDecayPara.h"
 #include "dialog/chartviewdialog.h"
 #include "dialog/gen_graph_dialog.h"
+#include "dialog/bindingdialog.h"
 #include "threads/workers.h"
 #include <time.h>
 
@@ -91,6 +92,8 @@ private slots:
 
 
     void on_action_generate_a_flowgraph_triggered();
+
+    void on_actionbind_flowcollection_with_basemap_triggered();
 
 private:
     Ui::MainWindow *ui;

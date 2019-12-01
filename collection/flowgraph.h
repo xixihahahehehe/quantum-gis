@@ -23,7 +23,8 @@ public:
 	int ecount;//number of edges
 	double average_shortest_path;
 	double diameter;
-	igraph_bool_t IsDirected; 
+    igraph_bool_t IsDirected;
+    bool IsInitiated;
 	
     void gen_flowgraph(flowcollection* flowcol);
 

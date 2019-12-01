@@ -4,6 +4,7 @@
 
 flowcollection::flowcollection()
 {
+    layerConnection=NULL;
 
 }
 
@@ -99,6 +100,14 @@ flowcollection::flowcollection(string filename, bool with_headers, string delime
         }
     }
     flows = tempflows;
+    layerConnection=NULL;
+    vector<string> tmpfname=auxiliary_func::split(filename,"//");
+    string fullname=tmpfname.back();
+    tmpfname.clear();
+    tmpfname=auxiliary_func::split(fullname,".");
+    name=tmpfname.front();
+
+
 }
 int flowcollection::Countflowid()
 {

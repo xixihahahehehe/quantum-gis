@@ -9,6 +9,7 @@ flowgraph::flowgraph()
     igraph_vector_init(&v_dict_to_seq, vcount);
     igraph_vector_init(&v_dict_to_org, vcount);
     igraph_empty(&mygraph, vcount, IsDirected);
+    IsInitiated = false;
 
 	layerConnection = NULL;
 }
@@ -91,6 +92,7 @@ flowgraph::flowgraph(flowcollection* flowcol)
 	//print();
 	vcount = igraph_vcount(&mygraph);
 	ecount = igraph_ecount(&mygraph);
+    IsInitiated = true;
 }
 
 flowgraph::~flowgraph()
@@ -180,6 +182,7 @@ void flowgraph::gen_flowgraph(flowcollection *flowcol)
     //print();
     vcount = igraph_vcount(&mygraph);
     ecount = igraph_ecount(&mygraph);
+    IsInitiated = true;
 }
 
 

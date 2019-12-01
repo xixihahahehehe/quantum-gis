@@ -52,7 +52,7 @@ void ChartViewDialog::draw()
     chart->legend()->hide();
     chart->createDefaultAxes();
     //chart->axisY()->setRange(0, 0.007);
-    chart->setTheme(QChart::ChartThemeDark);
+    //chart->setTheme(QChart::ChartThemeDark);
     ui->chartwidget->setChart(chart);
 }
 void ChartViewDialog::getdata(vector<vector<double> > res0)
