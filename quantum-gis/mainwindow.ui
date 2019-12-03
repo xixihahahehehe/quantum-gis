@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuopen">
+    <property name="title">
+     <string>open</string>
+    </property>
+    <widget class="QMenu" name="menutxt">
+     <property name="title">
+      <string>txt</string>
+     </property>
+     <addaction name="actionOD"/>
+     <addaction name="actionflow"/>
+    </widget>
+    <addaction name="menutxt"/>
+    <addaction name="actionflow_txt"/>
+    <addaction name="actionod_shp"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>交互统计</string>
+    </property>
+    <addaction name="actiondistance"/>
+    <addaction name="actiondirection"/>
+    <addaction name="actionweight"/>
+   </widget>
+   <widget class="QMenu" name="menustatistics">
+    <property name="title">
+     <string>statistics</string>
+    </property>
+    <addaction name="action_chart"/>
+   </widget>
+   <widget class="QMenu" name="menuPrepocessing">
+    <property name="title">
+     <string>Prepocessing</string>
+    </property>
+    <addaction name="actiongenerate_flow_collection"/>
+    <addaction name="action_generate_a_flowgraph"/>
+   </widget>
+   <addaction name="menuopen"/>
+   <addaction name="menuPrepocessing"/>
+   <addaction name="menustatistics"/>
+   <addaction name="menu"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionflow_txt">
+   <property name="text">
+    <string>shp</string>
+   </property>
+  </action>
+  <action name="actionOD">
+   <property name="text">
+    <string>OD</string>
+   </property>
+  </action>
+  <action name="actionflow">
+   <property name="text">
+    <string>flow</string>
+   </property>
+  </action>
+  <action name="actiondistance">
+   <property name="text">
+    <string>distance</string>
+   </property>
+  </action>
+  <action name="actiondirection">
+   <property name="text">
+    <string>direction</string>
+   </property>
+  </action>
+  <action name="actionweight">
+   <property name="text">
+    <string>weight</string>
+   </property>
+  </action>
+  <action name="actionod_shp">
+   <property name="text">
+    <string>od&amp;shp</string>
+   </property>
+  </action>
+  <action name="action_chart">
+   <property name="text">
+    <string>chart</string>
+   </property>
+  </action>
+  <action name="actiongenerate_flow_collection">
+   <property name="text">
+    <string>generate flow collection</string>
+   </property>
+  </action>
+  <action name="action_generate_a_flowgraph">
+   <property name="text">
+    <string>generate a flow graph</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>actiondistance</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>show()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
