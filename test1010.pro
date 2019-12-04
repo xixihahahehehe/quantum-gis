@@ -25,12 +25,14 @@ SOURCES += \
     dialog/bindingdialog.cpp \
     dialog/chartviewdialog.cpp \
     dialog/gen_graph_dialog.cpp \
+    dialog/graphexploredlg.cpp \
     dialog/open_odshp.cpp \
     geometries/flowdata.cpp \
     geometries/oddata.cpp \
     main.cpp \
     mainwindow.cpp \
     mainwindow_graphrelated.cpp \
+    method/histogram.cpp \
     threads/workers.cpp \
     visualize/flow_viz.cpp \
     visualize/menuwidget.cpp \
@@ -46,10 +48,12 @@ HEADERS += \
     dialog/bindingdialog.h \
     dialog/chartviewdialog.h \
     dialog/gen_graph_dialog.h \
+    dialog/graphexploredlg.h \
     dialog/open_odshp.h \
     geometries/flowdata.h \
     geometries/oddata.h \
     mainwindow.h \
+    method/histogram.h \
     threads/workers.h \
     visualize/flow_viz.h \
     visualize/menuwidget.h \
@@ -61,6 +65,7 @@ FORMS += \
     dialog/bindingdialog.ui \
     dialog/chartviewdialog.ui \
     dialog/gen_graph_dialog.ui \
+    dialog/graphexploredlg.ui \
     dialog/open_odshp.ui \
     mainwindow.ui \
     visualize/flow_viz.ui \

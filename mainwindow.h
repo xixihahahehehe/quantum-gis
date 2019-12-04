@@ -19,6 +19,7 @@ QT_CHARTS_USE_NAMESPACE
 #include "dialog/bindingdialog.h"
 #include "threads/workers.h"
 #include <time.h>
+#include "method/histogram.h"
 
 using namespace std;
 

@@ -10,6 +10,10 @@
 #include <time.h>
 #include <QMessageBox>
 #include <map>
+#include <QBarSeries>
+#include <QBarSet>
+#include "dialog/graphexploredlg.h"
+
 //read flow
 
 void MainWindow::on_actionbind_flowcollection_with_basemap_triggered()
@@ -58,6 +62,47 @@ void MainWindow::on_action_chart_triggered()
     dlg.getdata(res);
     dlg.draw();
     dlg.exec();
+
+    vector<int> v_degree,v_hist;
+    od_graph.get_degree(v_degree);
+    Histogram hist(v_degree);
+    hist.getHistVec(v_hist);
+
+    QChart *chart = new QChart;
+    QBarSet *set0 = new QBarSet("Degree");
+    for(int i=0;i<v_hist.size();i++)
+    {
+        *set0<<v_hist[i];
+    }
+    QBarSeries *series = new QBarSeries();
+    series->append(set0);
+    chart->addSeries(series);
+    //chart->createDefaultAxes();
+    //QValueAxis *axisX = new QValueAxis;
+    //axisX->setTickCount(10);
+    //chart->addAxis(axisX, Qt::AlignBottom);
+    QValueAxis *axisY = new QValueAxis;
+    chart->addAxis(axisY, Qt::AlignLeft);
+    //series->attachAxis(axisX);
+    series->attachAxis(axisY);
+
+    chart->setTitle("Degree Distribution");
+    chart->setAnimationOptions(QChart::SeriesAnimations);
+    chart->legend()->setVisible(true);
+    chart->legend()->setAlignment(Qt::AlignBottom);
+    chart->layout()->setContentsMargins(0, 0, 0, 0);
+
+
+    QChartView *chartView = new QChartView(chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+    GraphExploreDlg *window= new GraphExploreDlg();
+    window->setCentralWidget(chartView);
+    window->resize(800, 600);
+    window->setWindowModality(Qt::WindowModal);
+
+    window->show();
+
+
 }
 
 void MainWindow::on_action_generate_a_flowgraph_triggered()
