@@ -113,3 +113,12 @@ int flowcollection::Countflowid()
 {
     return layerConnection->GetFeatureCount();
 }
+string flowcollection::GetName()
+{
+    return name;
+}
+
+void flowcollection::SetName(string fname)
+{
+    name=fname;
+}

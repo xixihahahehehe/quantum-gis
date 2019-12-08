@@ -27,6 +27,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_buttonBox_accepted();
+
 private:
     Ui::open_odshp *ui;
 

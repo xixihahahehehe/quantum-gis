@@ -22,7 +22,7 @@ void MainWindow::on_actionbind_flowcollection_with_basemap_triggered()
     QStringList FlowColList;
     FlowColList.clear();
     for (int i=0;i<flowcollections.size();i++)
-        FlowColList <<flowcollections[i].name.c_str();
+        FlowColList <<flowcollections[i].GetName().c_str();
     dlg.setFlowColList(FlowColList);
     dlg.updateFlowColList();
     QStringList LayerList;
@@ -63,13 +63,6 @@ void MainWindow::on_action_chart_triggered()
     dlg.draw();
     dlg.exec();
 
-    vector<int> v_degree,v_hist;
-    od_graph.get_degree(v_degree);
-//    Histogram hist(v_degree);
-//    hist.getHistVec(v_hist);
-    GraphExploreDlg* dlg2 = new GraphExploreDlg;
-    dlg2->GetData(v_degree);
-    dlg2->show();
 
 //    QChart *chart = new QChart;
 //    QBarSet *set0 = new QBarSet("Degree");
@@ -114,7 +107,7 @@ void MainWindow::on_action_generate_a_flowgraph_triggered()
     QStringList FlowColList;
     FlowColList.clear();
     for (int i=0;i<flowcollections.size();i++)
-        FlowColList <<flowcollections[i].name.c_str();
+        FlowColList <<flowcollections[i].GetName().c_str();
     dlg.setFlowColList(FlowColList);
     dlg.updateComboBx();
 
@@ -135,4 +128,15 @@ void MainWindow::on_action_generate_a_flowgraph_triggered()
         // do something else
     }
 
+}
+
+void MainWindow::on_actiongraph_properties_triggered()
+{
+    vector<int> v_degree,v_hist;
+    od_graph.get_degree(v_degree);
+//    Histogram hist(v_degree);
+//    hist.getHistVec(v_hist);
+    GraphExploreDlg* dlg2 = new GraphExploreDlg;
+    dlg2->GetData(v_degree);
+    dlg2->show();
 }

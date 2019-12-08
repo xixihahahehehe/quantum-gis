@@ -13,7 +13,7 @@ using namespace std;
 class flowcollection
 {
 private:
-
+    string name;
 public:
 
     vector<flowdata> flows;
@@ -39,8 +39,10 @@ public:
     flowcollection(string odfilename,string layerfilename);
 
     int Countflowid();
+    string GetName();
+    void SetName(string fname);
 
-    string name;
+
 };
 
 #endif // FLOWCOLLECTION_H

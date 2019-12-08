@@ -17,6 +17,12 @@
 #include <QVector>
 #include <QPen>
 #include <QColor>
+#include <QRect>
+#include <QCursor>
+#include <QWheelEvent>
+#include <QMouseEvent>
+
+#define PI 3.14159265
 
 namespace Ui {
 class flow_viz;
@@ -30,44 +36,70 @@ public:
     explicit flow_viz(QWidget *parent = nullptr);
     ~flow_viz();
     void set_flowcollection(flowcollection *_fcollection);
-    void draw_basemap(QPainter *painter, const QRect& paintingRect);
+
 private:
     Ui::flow_viz *ui;
     flowcollection *_flowcollection=nullptr;
 
+    bool flag_press;
+    int pos_x;
+    int pos_y;
+    double scroll_size=0.05;
     double _zoomx;
     double _zoomy;
     double _scale;
     double max_weight;
     double min_weight;
     double _margin=0.05;
+    double min_fwidth=0.5;
+    double max_fwidth=2;
+    int flow_angle=20;
+    QColor od_color;
+    vector<QColor> flow_color;
+    QColor base_line;
+    QColor base_polygon;//fill polygon or draw polyline
+    QRect ViewBox;
     OGREnvelope *_envelope;
-    QPoint geo2screen(double _geox,double _geoy,const QRect& paintingRect)
+
+    QPoint geo2screen(double _geox,double _geoy)
     {
-        double x=(_geox-431742.787399994)*_scale+_zoomx;
-        double y=(_geoy-4400938.1632)*_scale+_zoomy;
-        y=paintingRect.height()-y;
+        double x=(_geox-_envelope->MinX)*_scale+_zoomx;
+        double y=(_geoy-_envelope->MinY)*_scale+_zoomy;
+        y=ViewBox.height()-y;
         return QPoint(floor(x),floor(y));
     }
-    void AutoComputeTransPara(const QRect& paintingRect);
-    QPoint ComputeFlowOriginDes(OGRGeometry *_ogrgeometry,const QRect& paintingRect)
+    QPoint Cal_MidPoint(QPoint o_point,QPoint d_point);
+    QPoint Cal_ArrowPoint(QPoint o_point,QPoint d_point);
+    void AutoComputeTransPara();
+    QPoint ComputeFlowOriginDes(OGRGeometry *_ogrgeometry)
     {
         OGRPoint _ogrpoint;
         _ogrgeometry->Centroid(&_ogrpoint);
-        return geo2screen(_ogrpoint.getX(),_ogrpoint.getY(),paintingRect);
+        return geo2screen(_ogrpoint.getX(),_ogrpoint.getY());
     }
 
-
-    void draw_flow(QPainter *painter,const QRect& paintingRect);
+    void InitialColor();
+    QColor cal_Flowcolor(double flow_weight);
+    double cal_Flowwidth(double flow_weight);
+    void draw_OD(QPainter *painter);
+    void draw_flow(QPainter *painter);
+    void draw_basemap(QPainter *painter);
     virtual void paintEvent( QPaintEvent * );
-
-    void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
-
     void extendWindowsSize();
     void shrinkWindowsSize();
 
     int m_originalWidth;
     int m_originalHeight;
+
+protected:
+    //virtual void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
+
+
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void mouseDoubleClickEvent(QMouseEvent *event);
+    virtual void wheelEvent(QWheelEvent *event);
 
 };
 

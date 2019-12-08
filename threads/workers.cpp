@@ -65,7 +65,7 @@ void workers::doWork(ODcollection od,OGRLayer * layer,flowcollection * fc)
         fc->Addflow(tmpflow);
     }
     fc->setLayerConnection(layer);
-    fc->name=od.name+"_flow";
+    fc->SetName(od.GetName()+"_flow");
     emit resultReady("result");
     /*tmp.setLayerConnection(layer);
     tmp.name=od.name+"_flow";

@@ -1,5 +1,5 @@
 QT       += core gui
-
+QT       += opengl
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 QT += charts
 
@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+	arrow.cpp \
     auxiliary_func.cpp \
     collection/flowcollection.cpp \
     collection/odcollection.cpp \
@@ -35,12 +36,14 @@ SOURCES += \
     method/histogram.cpp \
     threads/workers.cpp \
     visualize/flow_viz.cpp \
+	visualize/flow_viz_opengl.cpp \
     visualize/menuwidget.cpp \
     visualize/propertytable.cpp \
     method/CalculateBtwId.cpp \
     method/DistanceDecayPara.cpp
 
 HEADERS += \
+    arrow.h \
     auxiliary_func.h \
     collection/flowcollection.h \
     collection/odcollection.h \
@@ -56,6 +59,7 @@ HEADERS += \
     method/histogram.h \
     threads/workers.h \
     visualize/flow_viz.h \
+	visualize/flow_viz_opengl.h \
     visualize/menuwidget.h \
     visualize/propertytable.h \
     method/CalculateBtwId.h \
@@ -69,8 +73,11 @@ FORMS += \
     dialog/open_odshp.ui \
     mainwindow.ui \
     visualize/flow_viz.ui \
+	visualize/flow_viz_opengl.ui \
     visualize/menuwidget.ui \
     visualize/propertytable.ui
+
+LIBS += -lopengl32 -lglu32
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

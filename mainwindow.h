@@ -96,6 +96,8 @@ private slots:
 
     void on_actionbind_flowcollection_with_basemap_triggered();
 
+    void on_actiongraph_properties_triggered();
+
 private:
     Ui::MainWindow *ui;
     flow_viz *_flowviz;
@@ -105,5 +107,13 @@ private:
     QStringList od_list;
     QStringList flow_list;
     QStringList base_list;
+	
+	void updateForNewFiles();
+    void updatePropertyTable();
+    void getMenu();
+
+    vector<int> od_selected;
+    vector<int> flow_selected;
+    vector<int> base_selected;
 };
 #endif // MAINWINDOW_H

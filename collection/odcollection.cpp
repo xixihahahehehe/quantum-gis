@@ -63,3 +63,8 @@ void ODcollection::AddOD(ODdata newOD)
 {
     ODs.push_back(newOD);
 }
+
+string ODcollection::GetName()
+{
+    return name;
+}

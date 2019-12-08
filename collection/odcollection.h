@@ -6,6 +6,8 @@
 using namespace std;
 class ODcollection
 {
+private:
+    string name;
 public:
     vector<ODdata> ODs;
 
@@ -16,7 +18,7 @@ public:
     void DeleteOD(int index);
     ODdata GetOD(int index);
     int CountOD();
-    string name;
+    string GetName();
 };
 
 #endif // ODCOLLECTION_H

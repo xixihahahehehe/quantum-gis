@@ -240,79 +240,83 @@ n
 void MainWindow::on_actionod_shp_triggered()
 {
     open_odshp *open=new open_odshp;
-    open->exec();
-    QString fileName;
-    fileName=open->get_od_filename();
-    QString fileName2;
-    fileName2=open->get_shp_filename();
-    string cFileName=fileName.toStdString();
-    string cFileName2=fileName2.toStdString();
-    /*QString fileName;
-    fileName=QFileDialog::getOpenFileName(this,tr("OD文件"),"",tr("text(*.txt)"));
-    string cFileName=fileName.toStdString();
+    if(open->exec()==QDialog::Accepted)
+        {
+        QString fileName;
+        fileName=open->get_od_filename();
+        QString fileName2;
+        fileName2=open->get_shp_filename();
+        string cFileName=fileName.toStdString();
+        string cFileName2=fileName2.toStdString();
+        /*QString fileName;
+        fileName=QFileDialog::getOpenFileName(this,tr("OD文件"),"",tr("text(*.txt)"));
+        string cFileName=fileName.toStdString();
 
-    QString fileName2;
-    fileName2=QFileDialog::getOpenFileName(this,tr("图层文件"),"",tr("shapefile(*.shp)"));
-    string cFileName2=fileName2.toStdString();*/
+        QString fileName2;
+        fileName2=QFileDialog::getOpenFileName(this,tr("图层文件"),"",tr("shapefile(*.shp)"));
+        string cFileName2=fileName2.toStdString();*/
 
-    ODcollection tmpodc=ODcollection(cFileName);
+        ODcollection tmpodc=ODcollection(cFileName);
 
-    char c[1000];
-    strcpy(c,cFileName2.c_str());
-    GDALAllRegister();
-    GDALDataset *poDS;
-    poDS = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
-    if( poDS == NULL )
-    {
-        printf( "Open failed.\n" );
-        exit( 1 );
+        char c[1000];
+        strcpy(c,cFileName2.c_str());
+        GDALAllRegister();
+        GDALDataset *poDS;
+        poDS = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+        if( poDS == NULL )
+        {
+            printf( "Open failed.\n" );
+            exit( 1 );
+        }
+        myGDAlDatasets.push_back(poDS);
+
+        GDALDataset *poDS2;
+        poDS2 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+        myGDAlDatasets.push_back(poDS2);
+        GDALDataset *poDS3;
+        poDS3 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+        myGDAlDatasets.push_back(poDS3);
+        GDALDataset *poDS4;
+        poDS4= (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+        myGDAlDatasets.push_back(poDS4);
+
+        OGRLayer *tmplayer=poDS->GetLayer(0);
+        OGRLayer *tmplayer2=poDS2->GetLayer(0);
+        OGRLayer *tmplayer3=poDS3->GetLayer(0);
+        OGRLayer *tmplayer4=poDS4->GetLayer(0);
+        /*int aaa=sizeof(tmplayer);
+        string hehe=to_string(aaa);
+        QString haha=QString::fromStdString(hehe);
+        QMessageBox::information(this,"提示",haha);*/
+        //OGRLayer * tmplayer2=poDS->CopyLayer(tmplayer,tmplayer->GetName());
+        //OGRLayer * tmplayer3=poDS->CopyLayer(tmplayer,tmplayer->GetName());
+        //OGRLayer * tmplayer4=poDS->CopyLayer(tmplayer,tmplayer->GetName());
+
+        myLayers.push_back(tmplayer);
+        ODcollections.push_back(tmpodc);
+        //cut from here
+        //flowcollection eee;
+        //flowcollections.push_back(eee);
+        int index=flowcollections.size()-1;
+
+        //single qthread
+        //emit operate(tmpodc,tmplayer,&flowcollections[index]);
+
+        //ui->statusbar->showMessage("working",0);
+        ui->statusbar->showMessage("working");
+        //eee.ODconnection=&tmpodc;
+        finishsignal=0;
+        starttime=clock();
+        //multi qthreads
+        int odcount=tmpodc.CountOD();
+        int numperthread=odcount/4;
+        emit operate1(tmpodc,tmplayer,numperthread*0,numperthread*1,&sharedmap,&datauseable);
+        emit operate2(tmpodc,tmplayer2,numperthread*1,numperthread*2,&sharedmap,&datauseable);
+        emit operate3(tmpodc,tmplayer3,numperthread*2,numperthread*3,&sharedmap,&datauseable);
+        emit operate4(tmpodc,tmplayer4,numperthread*3,odcount,&sharedmap,&datauseable);
+        } else {
+
     }
-    myGDAlDatasets.push_back(poDS);
-
-    GDALDataset *poDS2;
-    poDS2 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
-    myGDAlDatasets.push_back(poDS2);
-    GDALDataset *poDS3;
-    poDS3 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
-    myGDAlDatasets.push_back(poDS3);
-    GDALDataset *poDS4;
-    poDS4= (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
-    myGDAlDatasets.push_back(poDS4);
-
-    OGRLayer *tmplayer=poDS->GetLayer(0);
-    OGRLayer *tmplayer2=poDS2->GetLayer(0);
-    OGRLayer *tmplayer3=poDS3->GetLayer(0);
-    OGRLayer *tmplayer4=poDS4->GetLayer(0);
-    /*int aaa=sizeof(tmplayer);
-    string hehe=to_string(aaa);
-    QString haha=QString::fromStdString(hehe);
-    QMessageBox::information(this,"提示",haha);*/
-    //OGRLayer * tmplayer2=poDS->CopyLayer(tmplayer,tmplayer->GetName());
-    //OGRLayer * tmplayer3=poDS->CopyLayer(tmplayer,tmplayer->GetName());
-    //OGRLayer * tmplayer4=poDS->CopyLayer(tmplayer,tmplayer->GetName());
-
-    myLayers.push_back(tmplayer);
-    ODcollections.push_back(tmpodc);
-    //cut from here
-    //flowcollection eee;
-    //flowcollections.push_back(eee);
-    int index=flowcollections.size()-1;
-
-    //single qthread
-    //emit operate(tmpodc,tmplayer,&flowcollections[index]);
-
-    //ui->statusbar->showMessage("working",0);
-    ui->statusbar->showMessage("working");
-    //eee.ODconnection=&tmpodc;
-    finishsignal=0;
-    starttime=clock();
-    //multi qthreads
-    int odcount=tmpodc.CountOD();
-    int numperthread=odcount/4;
-    emit operate1(tmpodc,tmplayer,numperthread*0,numperthread*1,&sharedmap,&datauseable);
-    emit operate2(tmpodc,tmplayer2,numperthread*1,numperthread*2,&sharedmap,&datauseable);
-    emit operate3(tmpodc,tmplayer3,numperthread*2,numperthread*3,&sharedmap,&datauseable);
-    emit operate4(tmpodc,tmplayer4,numperthread*3,odcount,&sharedmap,&datauseable);
 }
 
 void MainWindow::handleResults(const QString & aa)
@@ -331,14 +335,14 @@ void MainWindow::handleResults(const QString & aa)
     _flowviz->set_flowcollection(&flowcollections.front());
     _flowviz->repaint();
 
-    base_list<<flowcollections.front().layerConnection->GetName();
-    char chod[100];
-    strcpy(chod,ODcollections.front().name.c_str());
-    od_list<<chod;
-    char chflow[100];
-    strcpy(chflow,flowcollections.front().name.c_str());
-    flow_list<<chflow;
-    _leftbar->update_menu(od_list,flow_list,base_list);
+    // base_list<<flowcollections.front().layerConnection->GetName();
+    // char chod[100];
+    // strcpy(chod,ODcollections.front().name.c_str());
+    // od_list<<chod;
+    // char chflow[100];
+    // strcpy(chflow,flowcollections.front().name.c_str());
+    // flow_list<<chflow;
+    // _leftbar->update_menu(od_list,flow_list,base_list);
 
 
     //_ptable->update_table(flowcollections.front().layerConnection);
@@ -393,10 +397,11 @@ void MainWindow::handlepalResults()
         }
     }
     tmp.setLayerConnection(myLayers.front());
-    tmp.name=ODcollections[ODcollections.size()-1].name+"_flow";
+    tmp.SetName((ODcollections[ODcollections.size()-1]).GetName()+"_flow");
     tmp.ODconnection=&ODcollections[ODcollections.size()-1];
     flowcollections.push_back(tmp);
-    endtime=clock();
+    
+	endtime=clock();
     int timecost=endtime-starttime;
     string message="job finished,time cost "+to_string(timecost)+"ms";
     QString qmessage=QString::fromStdString(message);
@@ -405,23 +410,106 @@ void MainWindow::handlepalResults()
         tmpfc.ODconnection=&tmpodc;
 
         flowcollections.push_back(tmpfc);*/
+	
+	//menu viz propertytable update
+    //each time show last added one
+    updateForNewFiles();
+    updatePropertyTable();
+}
+    // _flowviz->set_flowcollection(&flowcollections.front());
+    // _flowviz->repaint();
 
-    _flowviz->set_flowcollection(&flowcollections.front());
-    _flowviz->repaint();
-
-    base_list<<flowcollections.front().layerConnection->GetName();
-    char chod[100];
-    strcpy(chod,ODcollections.front().name.c_str());
-    od_list<<chod;
-    char chflow[100];
-    strcpy(chflow,flowcollections.front().name.c_str());
-    flow_list<<chflow;
-    _leftbar->update_menu(od_list,flow_list,base_list);
+    // base_list<<flowcollections.front().layerConnection->GetName();
+    // char chod[100];
+    // strcpy(chod,ODcollections.front().name.c_str());
+    // od_list<<chod;
+    // char chflow[100];
+    // strcpy(chflow,flowcollections.front().name.c_str());
+    // flow_list<<chflow;
+    // _leftbar->update_menu(od_list,flow_list,base_list);
 
 
-    //_ptable->update_table(flowcollections.front().layerConnection);
-    OGRLayer *polayer=flowcollections.front().layerConnection;
+    // //_ptable->update_table(flowcollections.front().layerConnection);
+    // OGRLayer *polayer=flowcollections.front().layerConnection;
 
+    // OGRFeatureDefn *poFDefn=polayer->GetLayerDefn();
+    // int n=poFDefn->GetFieldCount();
+    // int m=int(polayer->GetFeatureCount());
+    // QTableWidget *_table=new QTableWidget(m, n);
+    // polayer->ResetReading();
+    // QStringList header;
+
+    // for(int i=0;i<n;i++)
+    // {
+       // header+=poFDefn->GetFieldDefn(i)->GetNameRef();
+    // }
+    // for(int i=0;i<m;i++)
+    // {
+       // OGRFeature *poFeature=polayer->GetNextFeature();
+       // for(int j=0;j<n;j++)
+       // {
+         // _table->setItem(i, j, new QTableWidgetItem(QString::fromLocal8Bit(poFeature->GetFieldAsString(j))));
+       // }
+     // }
+       // _table->setHorizontalHeaderLabels(header);
+       // _table->setStyleSheet("QTableWidget::item{border:1px solid;}");
+       // //_table->update();
+       // _table->show();
+
+        // /*tmp.setLayerConnection(layer);
+        // tmp.name=od.name+"_flow";
+        // return tmp;*/
+// }
+void MainWindow::getMenu()
+{
+    od_list.clear();
+    flow_list.clear();
+    base_list.clear();
+    std::list<OGRLayer *>::iterator it_map;
+    for (it_map=myLayers.begin();it_map!=myLayers.end();++it_map)
+    {
+        base_list<<(*it_map)->GetName();
+    }
+    std::vector<ODcollection>::iterator it_OD;
+    for (it_OD=ODcollections.begin();it_OD!=ODcollections.end();++it_OD)
+    {
+        char chod[100];
+        strcpy(chod,(*it_OD).GetName().c_str());
+        od_list<<chod;
+    }
+    std::vector<flowcollection>::iterator it_flow;
+    for (it_flow=flowcollections.begin();it_flow!=flowcollections.end();++it_flow)
+    {
+        char chod[100];
+        strcpy(chod,(*it_flow).GetName().c_str());
+        flow_list<<chod;
+    }
+}
+
+
+void MainWindow::updateForNewFiles()
+{
+    //get menu info
+    getMenu();
+    //selection update
+    od_selected.clear();
+    flow_selected.clear();
+    base_selected.clear();
+    //od_selected.push_back(od_list.size());
+    flow_selected.push_back(flow_list.size());
+    base_selected.push_back(base_list.size());
+
+    //update shapefile viz
+    _flowviz->set_flowcollection(&flowcollections.back());
+    _flowviz->update();
+    //update menu
+    _leftbar->update_menu(od_list,flow_list,base_list,od_selected,flow_selected,base_selected);
+}
+
+void MainWindow::updatePropertyTable()
+{
+    OGRLayer *polayer;
+    polayer=flowcollections.back().layerConnection;
     OGRFeatureDefn *poFDefn=polayer->GetLayerDefn();
     int n=poFDefn->GetFieldCount();
     int m=int(polayer->GetFeatureCount());
@@ -443,10 +531,6 @@ void MainWindow::handlepalResults()
      }
        _table->setHorizontalHeaderLabels(header);
        _table->setStyleSheet("QTableWidget::item{border:1px solid;}");
-       //_table->update();
        _table->show();
-
-        /*tmp.setLayerConnection(layer);
-        tmp.name=od.name+"_flow";
-        return tmp;*/
 }
+

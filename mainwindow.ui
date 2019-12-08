@@ -50,6 +50,7 @@
     <property name="title">
      <string>statistics</string>
     </property>
+    <addaction name="actiongraph_properties"/>
     <addaction name="action_chart"/>
    </widget>
    <widget class="QMenu" name="menuPrepocessing">
@@ -103,7 +104,7 @@
   </action>
   <action name="action_chart">
    <property name="text">
-    <string>chart</string>
+    <string>distance decay parameter interpolation</string>
    </property>
   </action>
   <action name="actiongenerate_flow_collection">
@@ -119,6 +120,11 @@
   <action name="actionbind_flowcollection_with_basemap">
    <property name="text">
     <string>bind flowcollection to basemap</string>
+   </property>
+  </action>
+  <action name="actiongraph_properties">
+   <property name="text">
+    <string>graph properties</string>
    </property>
   </action>
  </widget>
