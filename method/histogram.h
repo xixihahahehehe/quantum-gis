@@ -17,7 +17,7 @@ public:
 
     void record(double datum);
     int bins() const;                    // Get the number of bins
-	int getBinWidth() const;                // Get the width of bins
+    double getBinWidth() const;                // Get the width of bins
     int count(int bin) const;            // Get the number of data points in some bin
     int countLowerOutliers() const;      // Get count of values below the minimum
     int countUpperOutliers() const;      // Get count of values at or above the maximum

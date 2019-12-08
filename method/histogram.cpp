@@ -57,10 +57,11 @@ void Histogram::ResetHistogram(int numberOfBins, double WidthOfBins,double min, 
         binCount = numberOfBins;
         binWidth = (bmax-bmin)/numberOfBins;
     }
-    else if(binWidth>0)
+    else if(WidthOfBins>0)
     {
         binWidth = WidthOfBins;
-        binCount = (int)ceil((bmax-bmin) / binWidth);
+        //binCount = (int)ceil((bmax-bmin) / binWidth);
+        binCount = (int)((bmax-bmin) / binWidth+1);
     }
     counts = new int[binCount]();
     //update hist counts[]
@@ -86,7 +87,7 @@ int Histogram::bins() const
     return binCount;
 
 }// Get the number of bins
-int Histogram::getBinWidth() const
+double Histogram::getBinWidth() const
 {
 	return binWidth;
 }// Get the width of bins
