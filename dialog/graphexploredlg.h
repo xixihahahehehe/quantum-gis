@@ -7,7 +7,7 @@ QT_CHARTS_USE_NAMESPACE
 #include<vector>
 #include <QBarSeries>
 #include <QBarSet>
-#include "E:/GitHub/quantum-gis/method/histogram.h"
+#include "../method/histogram.h"
 
 using namespace std;
 
