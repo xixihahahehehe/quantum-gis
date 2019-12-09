@@ -205,3 +205,13 @@ void GraphExploreDlg::on_interval_comboBx_currentIndexChanged(const QString &arg
         hasreset=0;
     }
 }
+
+void GraphExploreDlg::on_graph_comboBx_currentIndexChanged(const QString &arg1)
+{
+
+}
+
+void GraphExploreDlg::on_property_comboBx_currentIndexChanged(const QString &arg1)
+{
+
+}

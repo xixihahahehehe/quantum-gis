@@ -1,6 +1,6 @@
 #ifndef FLOWCOLLECTION_H
 #define FLOWCOLLECTION_H
-#include "geometries/flowdata.h"
+#include "../geometries/flowdata.h"
 #include "ogrsf_frmts.h"
 #include <vector>
 #include <fstream>

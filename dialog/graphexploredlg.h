@@ -44,6 +44,8 @@ private slots:
 
     void on_classes_comboBx_currentIndexChanged(const QString &arg1);
     void on_interval_comboBx_currentIndexChanged(const QString &arg1);
+    void on_graph_comboBx_currentIndexChanged(const QString &arg1);
+    void on_property_comboBx_currentIndexChanged(const QString &arg1);
 };
 
 #endif // GRAPHEXPLOREDLG_H

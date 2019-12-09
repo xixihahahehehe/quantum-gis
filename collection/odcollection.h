@@ -1,6 +1,6 @@
 #ifndef ODCOLLECTION_H
 #define ODCOLLECTION_H
-#include "geometries/oddata.h"
+#include "../geometries/oddata.h"
 #include <vector>
 #include <fstream>
 using namespace std;
