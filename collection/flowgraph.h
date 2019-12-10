@@ -25,8 +25,8 @@ public:
 	void calculate_properties();
 	void get_degree(vector<int>&);
     void get_strength(vector<int>&);
-//    void get_pagerank(vector<double>&);
-//    void get_closeness(vector<double>&);
+    void get_pagerank(vector<double>&);
+    void get_closeness(vector<double>&);
     void get_betweenness(vector<double>&);
 	int get_degree_byid(int vid, bool org_or_not);//use original id, org_or_not = 1;sequencr id ,org_or_not = 0
 	double get_flow_byid(int src_id, int tar_id, bool org_or_not);

@@ -10,6 +10,7 @@ class Histogram
 public:
     Histogram();
     Histogram(vector<int>data);
+    Histogram(vector<double>data);
     Histogram(double min, double max, int numberOfBins);
     Histogram(double min, double max, double binWidth);
     //void InputDataVector(vector<int>data);

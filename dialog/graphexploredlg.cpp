@@ -69,16 +69,24 @@ void GraphExploreDlg::sltTooltip(bool status, int index, QBarSet *barset)
 }
 void GraphExploreDlg::GetData(flowgraph& od_graph)
 {
-	n_properties = 2;
+    n_properties = 2;
 	Histogram_list = new Histogram*[n_properties];
-	vector<int>data;
+    vector<int>data;
 	od_graph.get_degree(data);
 
 	Histogram_list[0] = new Histogram(data);
 	od_graph.get_strength(data);
 	Histogram_list[1] = new Histogram(data);
+//    vector<double>data2;
+//    od_graph.get_betweenness(data2);
+//    Histogram_list[2] = new Histogram(data2);
+//    od_graph.get_closeness(data2);
+//    Histogram_list[3] = new Histogram(data2);
+//    od_graph.get_pagerank(data2);
+//    Histogram_list[4] = new Histogram(data2);
+
 	PropertyList.clear();
-	PropertyList << "Degree" << "Strength";
+    PropertyList << "Degree" << "Strength";//<<"Betweeness"<<"Closeness"<<"PageRank";
 	ui->property_comboBx->clear();
 	ui->property_comboBx->addItems(PropertyList);
 
@@ -207,18 +215,20 @@ void GraphExploreDlg::on_property_comboBx_currentIndexChanged(const QString &arg
 {
 	histogram = Histogram_list[ui->property_comboBx->currentIndex()];
 	ClassesList.clear();
-	for (int i = 1; i <= histogram->upperBound() - histogram->lowerBound() + 1; i++)
+    int init_classes = histogram->bins();
+    int interval = histogram->getBinWidth();
+    int range = init_classes<2000?init_classes:2000;
+    for (int i = 1; i <= range + 1; i++)
 		ClassesList << QString("%1").arg(i);
 	IntervalList.clear();
-	for (int i = 1; i <= histogram->upperBound() - histogram->lowerBound(); i++)
+    for (int i = 1; i <= histogram->upperBound() - histogram->lowerBound(); i+=(init_classes < 100?1:init_classes / 100))
 		IntervalList << QString("%1").arg(i);
 
 	if (!has_initchart)
 	{
 		InitChart();
 	}
-	int init_classes = histogram->bins();
-	int interval = histogram->getBinWidth();
+
 	hasreset = 1;
 	ui->classes_comboBx->clear();
 	ui->classes_comboBx->addItems(ClassesList);

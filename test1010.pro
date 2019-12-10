@@ -34,6 +34,16 @@ SOURCES += \
     mainwindow.cpp \
     mainwindow_graphrelated.cpp \
     method/histogram.cpp \
+    src/prpack.cpp \
+    src/prpack/prpack_base_graph.cpp \
+    src/prpack/prpack_igraph_graph.cpp \
+    src/prpack/prpack_preprocessed_ge_graph.cpp \
+    src/prpack/prpack_preprocessed_gs_graph.cpp \
+    src/prpack/prpack_preprocessed_scc_graph.cpp \
+    src/prpack/prpack_preprocessed_schur_graph.cpp \
+    src/prpack/prpack_result.cpp \
+    src/prpack/prpack_solver.cpp \
+    src/prpack/prpack_utils.cpp \
     threads/workers.cpp \
     visualize/flow_viz.cpp \
 	visualize/flow_viz_opengl.cpp \
@@ -57,6 +67,21 @@ HEADERS += \
     geometries/oddata.h \
     mainwindow.h \
     method/histogram.h \
+    src/prpack.h \
+    src/prpack/prpack.h \
+    src/prpack/prpack_base_graph.h \
+    src/prpack/prpack_csc.h \
+    src/prpack/prpack_csr.h \
+    src/prpack/prpack_edge_list.h \
+    src/prpack/prpack_igraph_graph.h \
+    src/prpack/prpack_preprocessed_ge_graph.h \
+    src/prpack/prpack_preprocessed_graph.h \
+    src/prpack/prpack_preprocessed_gs_graph.h \
+    src/prpack/prpack_preprocessed_scc_graph.h \
+    src/prpack/prpack_preprocessed_schur_graph.h \
+    src/prpack/prpack_result.h \
+    src/prpack/prpack_solver.h \
+    src/prpack/prpack_utils.h \
     threads/workers.h \
     visualize/flow_viz.h \
 	visualize/flow_viz_opengl.h \
@@ -124,3 +149,6 @@ DEPENDPATH += $$PWD/../geos/include
 
 win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../geos/lib/geos_d.lib
 else:unix:!macx|win32-g++: PRE_TARGETDEPS += $$PWD/../geos/lib/libgeos_d.a
+
+DISTFILES += \
+    src/prpack/prpack.inc
