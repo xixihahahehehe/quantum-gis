@@ -132,11 +132,11 @@ void MainWindow::on_action_generate_a_flowgraph_triggered()
 
 void MainWindow::on_actiongraph_properties_triggered()
 {
-    vector<int> v_degree,v_hist;
-    od_graph.get_degree(v_degree);
+//    vector<int> v_degree,v_hist;
+//    od_graph.get_degree(v_degree);
 //    Histogram hist(v_degree);
 //    hist.getHistVec(v_hist);
     GraphExploreDlg* dlg2 = new GraphExploreDlg;
-    dlg2->GetData(v_degree);
+    dlg2->GetData(od_graph);
     dlg2->show();
 }

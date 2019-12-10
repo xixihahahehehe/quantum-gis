@@ -291,71 +291,70 @@ void flowgraph::get_strength(vector<int>& v_strength)
     igraph_vector_destroy(&res);
 
 }
-//void flowgraph::get_pagerank(vector<double>& v_pagerank)
-//{
-//    igraph_vector_t res;
-//    igraph_real_t value;//the eigenvalue corresponding to the found eigenvector
-//    igraph_vector_init(&res, vcount);
-//    //something wrong with the source ARPACK
-//    //igraph_arpack_options_t options;
-//    //igraph_arpack_options_init(&options);
-//    igraph_vector_t weights;
-//    igraph_vector_init(&weights, 0);
-//    igraph_cattribute_EANV(&mygraph, "weight",
-//        igraph_ess_all(IGRAPH_EDGEORDER_ID), &weights);
-//    //igraph_eigenvector_centrality(&mygraph, &res, &value, /*directed=*/ IsDirected,
-//    //	/*scale=*/0, /*weights=*/NULL ,&options);
+void flowgraph::get_pagerank(vector<double>& v_pagerank)
+{
+    igraph_vector_t res;
+    igraph_real_t value;//the eigenvalue corresponding to the found eigenvector
+    igraph_vector_init(&res, vcount);
+    //something wrong with the source ARPACK
+    //igraph_arpack_options_t options;
+    //igraph_arpack_options_init(&options);
+    igraph_vector_t weights;
+    igraph_vector_init(&weights, 0);
+    igraph_cattribute_EANV(&mygraph, "weight",
+        igraph_ess_all(IGRAPH_EDGEORDER_ID), &weights);
+    //igraph_eigenvector_centrality(&mygraph, &res, &value, /*directed=*/ IsDirected,
+    //	/*scale=*/0, /*weights=*/NULL ,&options);
 
-//    /*igraph_pagerank(&mygraph, IGRAPH_PAGERANK_ALGO_ARPACK, &res, 0,
-//        igraph_vss_all(), IsDirected, 0.85, &weights, &options);*/
+    /*igraph_pagerank(&mygraph, IGRAPH_PAGERANK_ALGO_ARPACK, &res, 0,
+        igraph_vss_all(), IsDirected, 0.85, &weights, &options);*/
 
-//    igraph_pagerank(&mygraph, IGRAPH_PAGERANK_ALGO_PRPACK, &res, 0,
-//        igraph_vss_all(), IsDirected, 0.85, &weights, 0);
+    igraph_pagerank(&mygraph, IGRAPH_PAGERANK_ALGO_PRPACK, &res, 0,
+        igraph_vss_all(), IsDirected, 0.85, &weights, 0);
 
-//    v_pagerank.clear();
-//    for (int i = 0; i < igraph_vector_size(&res); i++)
-//    {
-//        double tmp = (double)VECTOR(res)[i];
-//        //cout << i << ": " << VECTOR(degree)[i] << endl;
-//        v_pagerank.push_back(tmp);
-//    }
-//    igraph_vector_destroy(&res);
+    v_pagerank.clear();
+    for (int i = 0; i < igraph_vector_size(&res); i++)
+    {
+        double tmp = (double)VECTOR(res)[i];
+        //cout << i << ": " << VECTOR(degree)[i] << endl;
+        v_pagerank.push_back(tmp);
+    }
+    igraph_vector_destroy(&res);
 
-//}
-//void flowgraph::get_betweenness(vector<double>& v_betweenness)
-//{
-//    igraph_vector_t res;
-//    igraph_vector_init(&res, vcount);
-//    igraph_betweenness(/*graph=*/ &mygraph, /*res=*/ &res, /*vids=*/ igraph_vss_all(),
-//        /*directed=*/IsDirected, /*weights=*/ NULL, /*nobigint=*/ 1);
+}
+void flowgraph::get_betweenness(vector<double>& v_betweenness)
+{
+    igraph_vector_t res;
+    igraph_vector_init(&res, vcount);
+    igraph_betweenness(/*graph=*/ &mygraph, /*res=*/ &res, /*vids=*/ igraph_vss_all(),
+        /*directed=*/IsDirected, /*weights=*/ NULL, /*nobigint=*/ 1);
 
-//    v_betweenness.clear();
-//    for (int i = 0; i < igraph_vector_size(&res); i++)
-//    {
-//        double tmp = (double)VECTOR(res)[i];
-//        //cout << i << ": " << VECTOR(degree)[i] << endl;
-//        v_betweenness.push_back(tmp);
-//    }
-//    igraph_vector_destroy(&res);
+    v_betweenness.clear();
+    for (int i = 0; i < igraph_vector_size(&res); i++)
+    {
+        double tmp = (double)VECTOR(res)[i];
+        //cout << i << ": " << VECTOR(degree)[i] << endl;
+        v_betweenness.push_back(tmp);
+    }
+    igraph_vector_destroy(&res);
+}
+void flowgraph::get_closeness(vector<double>& v_closeness)
+{
+    igraph_vector_t res;
+    igraph_vector_init(&res, vcount);
+    igraph_closeness(/*graph=*/ &mygraph, /*res=*/ &res, /*vids=*/ igraph_vss_all(),
+        /*mode=IGRAPH_ALL IGRAPH_OUT IGRAPH_IN*/IGRAPH_ALL, /*weights=*/ NULL, /*normalized=*/ 1);
 
-//}
-//void flowgraph::get_closeness(vector<double>& v_closeness)
-//{
-//    igraph_vector_t res;
-//    igraph_vector_init(&res, vcount);
-//    igraph_closeness(/*graph=*/ &mygraph, /*res=*/ &res, /*vids=*/ igraph_vss_all(),
-//        /*mode=IGRAPH_ALL IGRAPH_OUT IGRAPH_IN*/IGRAPH_ALL, /*weights=*/ NULL, /*normalized=*/ 1);
+    v_closeness.clear();
+    for (int i = 0; i < igraph_vector_size(&res); i++)
+    {
+        double tmp = (double)VECTOR(res)[i];
+        //cout << i << ": " << VECTOR(degree)[i] << endl;
+        v_closeness.push_back(tmp);
+    }
+    igraph_vector_destroy(&res);
 
-//    v_closeness.clear();
-//    for (int i = 0; i < igraph_vector_size(&res); i++)
-//    {
-//        double tmp = (double)VECTOR(res)[i];
-//        //cout << i << ": " << VECTOR(degree)[i] << endl;
-//        v_closeness.push_back(tmp);
-//    }
-//    igraph_vector_destroy(&res);
-
-//}
+}
 int flowgraph::get_degree_byid(int vid, bool org_or_not) //, igraph_neimode_t mode)
 {
 

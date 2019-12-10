@@ -2,10 +2,10 @@
 
 
 
-//Histogram::Histogram()
-//{
+Histogram::Histogram()
+{
 
-//}
+}
 Histogram::Histogram(vector<int>data)
 {
     vector<int> vec=data;
@@ -27,13 +27,40 @@ Histogram::Histogram(vector<int>data)
     upperOutlierCount = 0;
 
 }
+Histogram::Histogram(vector<double>data)
+{
+    vector<double> vec=data;
+    //sort(vec.begin(), vec.end());
+    double maxValue = *max_element(vec.begin(),vec.end());
+    double minValue = *min_element(vec.begin(),vec.end());
+    bmin = minValue;
+    bmax = maxValue;
+
+    binWidth = (bmax-bmin)/100;
+    binCount = 101;
+    lowerOutlierCount = 0;
+    upperOutlierCount = 0;
+
+    counts = new int[binCount]();
+    for (int i=0;i<vec.size();i++)
+    {
+        record(vec[i]);
+        Rawdata.push_back(vec[i]);
+    }
+}
 Histogram::Histogram(double min, double max, int numberOfBins)
 {
+    bmin = min;
+    bmax = max;
+    binCount = numberOfBins;
     binWidth = (max-min)/numberOfBins;
 
 }
 Histogram::Histogram(double min, double max, double binWidth)
 {
+    bmin = min;
+    bmax = max;
+    Histogram::binWidth = binWidth;
     binCount = (int)ceil((max-min) / binWidth); // requires <cmath>
 
 
@@ -41,7 +68,8 @@ Histogram::Histogram(double min, double max, double binWidth)
 
 Histogram::~Histogram()
 {
-    delete[] counts;
+	if (counts)
+		delete[] counts;
 }
 void Histogram::ResetHistogram(int numberOfBins, double WidthOfBins,double min, double max)
 {

@@ -8,8 +8,9 @@ using namespace std;
 class Histogram
 {
 public:
-//    Histogram();
+    Histogram();
     Histogram(vector<int>data);
+    Histogram(vector<double>data);
     Histogram(double min, double max, int numberOfBins);
     Histogram(double min, double max, double binWidth);
     //void InputDataVector(vector<int>data);
@@ -33,7 +34,7 @@ public:
     double binWidth;
     int binCount;
     int lowerOutlierCount, upperOutlierCount;
-    int* counts;
+    int* counts = NULL;
 };
 
 #endif // HISTOGRAM_H
