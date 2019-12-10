@@ -163,7 +163,7 @@ void GraphExploreDlg::on_classes_comboBx_currentIndexChanged(const QString &arg1
         QBarSeries *series = new QBarSeries(chart);
         vector<int> v_hist;
         histogram->getHistVec(v_hist);
-        QBarSet *set0 = new QBarSet("Degree");
+        QBarSet *set0 = new QBarSet(ui->property_comboBx->currentText());
         for (int i = 0; i < v_hist.size(); i++)
         {
             *set0 << v_hist[i];
@@ -195,7 +195,7 @@ void GraphExploreDlg::on_interval_comboBx_currentIndexChanged(const QString &arg
         QBarSeries *series = new QBarSeries(chart);
         vector<int> v_hist;
         histogram->getHistVec(v_hist);
-        QBarSet *set0 = new QBarSet("Degree");
+        QBarSet *set0 = new QBarSet(ui->property_comboBx->currentText());
         for (int i = 0; i < v_hist.size(); i++)
         {
             *set0 << v_hist[i];
@@ -217,13 +217,13 @@ void GraphExploreDlg::on_property_comboBx_currentIndexChanged(const QString &arg
     if(ui->property_comboBx->currentIndex()<=1)
     {
         ClassesList.clear();
-        int init_classes = histogram->bins();
-        int interval = histogram->getBinWidth();
+        int init_classes = histogram->upperBound() - histogram->lowerBound()+1;
+        int interval = 1;
         int range = init_classes<2000?init_classes:2000;
         for (int i = 1; i <= range + 1; i++)
             ClassesList << QString("%1").arg(i);
         IntervalList.clear();
-        for (int i = 1; i <= histogram->upperBound() - histogram->lowerBound(); i+=(init_classes < 100?1:(init_classes / 100 - 1)))
+        for (int i = 1; i <= histogram->upperBound() - histogram->lowerBound(); i+=(init_classes < 100?interval:(init_classes / 100 )))
             IntervalList << QString("%1").arg(i);
 
         if (!has_initchart)
@@ -246,13 +246,13 @@ void GraphExploreDlg::on_property_comboBx_currentIndexChanged(const QString &arg
     else
     {
         ClassesList.clear();
-        int init_classes = histogram->bins();
-        double interval = histogram->getBinWidth();
+        int init_classes = 101;
+        double interval = (histogram->upperBound() - histogram->lowerBound())/100;
         for (int i = 1; i <= init_classes + 1; i++)
             ClassesList << QString("%1").arg(i);
         IntervalList.clear();
         for (double i = interval; i <= histogram->upperBound() - histogram->lowerBound(); i+=interval)
-            IntervalList << QString::number(i,'f',4);
+            IntervalList << QString("%1").arg(i);//QString::number(i,'f',4);
 
         if (!has_initchart)
         {
@@ -264,7 +264,7 @@ void GraphExploreDlg::on_property_comboBx_currentIndexChanged(const QString &arg
         ui->classes_comboBx->addItems(ClassesList);
         ui->classes_comboBx->setCurrentIndex(init_classes - 1);
         hasreset = 0;
-        if (init_classes > 100)
+        if (init_classes > 101)
             interval *= init_classes / 100;
         ui->interval_comboBx->clear();
         ui->interval_comboBx->addItems(IntervalList);

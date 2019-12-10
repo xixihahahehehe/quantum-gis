@@ -40,6 +40,8 @@ void MainWindow::on_actionbind_flowcollection_with_basemap_triggered()
         list<OGRLayer *>::iterator itor2 = myLayers.begin();
         advance(itor2,layer_idx);
         taxiflows->layerConnection = *itor2;
+        updateForNewFiles();
+        updatePropertyTable();
 
     } else {
         // do something else
@@ -60,6 +62,7 @@ void MainWindow::on_action_chart_triggered()
     vector<vector<double>> res;
     double b_stat = distance_decay_parameter(od_graph, res);
     dlg.getdata(res);
+    dlg.setText();
     dlg.draw();
     dlg.exec();
 
@@ -136,6 +139,11 @@ void MainWindow::on_actiongraph_properties_triggered()
 //    od_graph.get_degree(v_degree);
 //    Histogram hist(v_degree);
 //    hist.getHistVec(v_hist);
+    if(od_graph.IsInitiated==false)
+    {
+        QMessageBox::critical(NULL, "Notice", "Graph not generated", QMessageBox::Ok, QMessageBox::Ok);
+        return;
+    }
     GraphExploreDlg* dlg2 = new GraphExploreDlg;
     dlg2->GetData(od_graph);
     dlg2->show();

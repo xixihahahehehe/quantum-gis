@@ -17,6 +17,7 @@ public:
     vector<vector<double>> res;
     void getdata(vector<vector<double>> res0);
     void draw();
+    void setText();
 
 private:
     Ui::ChartViewDialog *ui;
