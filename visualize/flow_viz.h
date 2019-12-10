@@ -11,6 +11,7 @@
 #include <math.h>
 
 //UI related
+#include <QPixmap>
 #include <QPainter>
 #include <QPoint>
 #include <QPolygon>
@@ -69,7 +70,8 @@ private:
         return QPoint(floor(x),floor(y));
     }
     QPoint Cal_MidPoint(QPoint o_point,QPoint d_point);
-    QPoint Cal_ArrowPoint(QPoint o_point,QPoint d_point);
+    //calculate the first point of the arrow
+    QPoint Cal_ArrowPoint(QPoint o_point,QPoint d_point,bool flag,double dist);
     void AutoComputeTransPara();
     QPoint ComputeFlowOriginDes(OGRGeometry *_ogrgeometry)
     {
@@ -81,6 +83,7 @@ private:
     void InitialColor();
     QColor cal_Flowcolor(double flow_weight);
     double cal_Flowwidth(double flow_weight);
+    double cal_dist(QPoint o_po,QPoint d_po);
     void draw_OD(QPainter *painter);
     void draw_flow(QPainter *painter);
     void draw_basemap(QPainter *painter);
@@ -97,7 +100,7 @@ protected:
 
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent *event);
-    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event,QPaintEvent *paint_event);
     virtual void mouseDoubleClickEvent(QMouseEvent *event);
     virtual void wheelEvent(QWheelEvent *event);
 

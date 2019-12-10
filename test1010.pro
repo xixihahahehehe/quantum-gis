@@ -110,42 +110,42 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 
-#unix:!macx|win32: LIBS += -LD:/gdal_debug_x64/lib/ -lgdal
+unix:!macx|win32: LIBS += -LD:/gdal_debug_x64/lib/ -lgdal
 
-#INCLUDEPATH += D:/gdal_debug_x64/include
-#DEPENDPATH += D:/gdal_debug_x64/include
+INCLUDEPATH += D:/gdal_debug_x64/include
+DEPENDPATH += D:/gdal_debug_x64/include
 
-#win32:!win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/lib/gdal.lib
-#else:unix:!macx|win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/lib/libgdal.a
+win32:!win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/lib/gdal.lib
+else:unix:!macx|win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/lib/libgdal.a
 
-win32: LIBS += -L$$PWD/../gdal_debug_x64/lib/ -lgdal
+#win32: LIBS += -L$$PWD/../gdal_debug_x64/lib/ -lgdal
 
-INCLUDEPATH += $$PWD/../gdal_debug_x64/include
-DEPENDPATH += $$PWD/../gdal_debug_x64/include
+#INCLUDEPATH += $$PWD/../gdal_debug_x64/include
+#DEPENDPATH += $$PWD/../gdal_debug_x64/include
 
-win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../gdal_debug_x64/lib/gdal.lib
-else:win32-g++: PRE_TARGETDEPS += $$PWD/../gdal_debug_x64/lib/libgdal.a
+#win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../gdal_debug_x64/lib/gdal.lib
+#else:win32-g++: PRE_TARGETDEPS += $$PWD/../gdal_debug_x64/lib/libgdal.a
 
-win32: LIBS += -L$$PWD/../OSGeo4W/lib/ -lproj_6_1_d
+#win32: LIBS += -L$$PWD/../OSGeo4W/lib/ -lproj_6_1_d
 
-INCLUDEPATH += $$PWD/../OSGeo4W/include
-DEPENDPATH += $$PWD/../OSGeo4W/include
+#INCLUDEPATH += $$PWD/../OSGeo4W/include
+#DEPENDPATH += $$PWD/../OSGeo4W/include
 
-win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../OSGeo4W/lib/proj_6_1_d.lib
-else:win32-g++: PRE_TARGETDEPS += $$PWD/../OSGeo4W/lib/libproj_6_1_d.a
+#win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../OSGeo4W/lib/proj_6_1_d.lib
+#else:win32-g++: PRE_TARGETDEPS += $$PWD/../OSGeo4W/lib/libproj_6_1_d.a
 
-win32: LIBS += -L$$PWD/../igraph/lib/ -ligraph
+#win32: LIBS += -L$$PWD/../igraph/lib/ -ligraph
 
-INCLUDEPATH += $$PWD/../igraph/include
-DEPENDPATH += $$PWD/../igraph/include
+#INCLUDEPATH += $$PWD/../igraph/include
+#DEPENDPATH += $$PWD/../igraph/include
 
-win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../igraph/lib/igraph.lib
-else:win32-g++: PRE_TARGETDEPS += $$PWD/../igraph/lib/libigraph.a
+#win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../igraph/lib/igraph.lib
+#else:win32-g++: PRE_TARGETDEPS += $$PWD/../igraph/lib/libigraph.a
 
-unix:!macx|win32: LIBS += -L$$PWD/../geos/lib/ -lgeos_d
+#unix:!macx|win32: LIBS += -L$$PWD/../geos/lib/ -lgeos_d
 
-INCLUDEPATH += $$PWD/../geos/include
-DEPENDPATH += $$PWD/../geos/include
+#INCLUDEPATH += $$PWD/../geos/include
+#DEPENDPATH += $$PWD/../geos/include
 
 win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../geos/lib/geos_d.lib
 else:unix:!macx|win32-g++: PRE_TARGETDEPS += $$PWD/../geos/lib/libgeos_d.a
