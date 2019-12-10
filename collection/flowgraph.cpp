@@ -322,23 +322,23 @@ void flowgraph::get_strength(vector<int>& v_strength)
 //    igraph_vector_destroy(&res);
 
 //}
-//void flowgraph::get_betweenness(vector<double>& v_betweenness)
-//{
-//    igraph_vector_t res;
-//    igraph_vector_init(&res, vcount);
-//    igraph_betweenness(/*graph=*/ &mygraph, /*res=*/ &res, /*vids=*/ igraph_vss_all(),
-//        /*directed=*/IsDirected, /*weights=*/ NULL, /*nobigint=*/ 1);
+void flowgraph::get_betweenness(vector<double>& v_betweenness)
+{
+    igraph_vector_t res;
+    igraph_vector_init(&res, vcount);
+    igraph_betweenness(/*graph=*/ &mygraph, /*res=*/ &res, /*vids=*/ igraph_vss_all(),
+        /*directed=*/IsDirected, /*weights=*/ NULL, /*nobigint=*/ 1);
 
-//    v_betweenness.clear();
-//    for (int i = 0; i < igraph_vector_size(&res); i++)
-//    {
-//        double tmp = (double)VECTOR(res)[i];
-//        //cout << i << ": " << VECTOR(degree)[i] << endl;
-//        v_betweenness.push_back(tmp);
-//    }
-//    igraph_vector_destroy(&res);
+    v_betweenness.clear();
+    for (int i = 0; i < igraph_vector_size(&res); i++)
+    {
+        double tmp = (double)VECTOR(res)[i];
+        //cout << i << ": " << VECTOR(degree)[i] << endl;
+        v_betweenness.push_back(tmp);
+    }
+    igraph_vector_destroy(&res);
 
-//}
+}
 //void flowgraph::get_closeness(vector<double>& v_closeness)
 //{
 //    igraph_vector_t res;

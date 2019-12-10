@@ -1,5 +1,5 @@
 #include "flowcollection.h"
-#include "auxiliary_func.h"
+#include "../auxiliary_func.h"
 
 
 flowcollection::flowcollection()

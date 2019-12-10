@@ -2,10 +2,10 @@
 
 
 
-//Histogram::Histogram()
-//{
+Histogram::Histogram()
+{
 
-//}
+}
 Histogram::Histogram(vector<int>data)
 {
     vector<int> vec=data;
@@ -41,7 +41,8 @@ Histogram::Histogram(double min, double max, double binWidth)
 
 Histogram::~Histogram()
 {
-    delete[] counts;
+	if (counts)
+		delete[] counts;
 }
 void Histogram::ResetHistogram(int numberOfBins, double WidthOfBins,double min, double max)
 {
