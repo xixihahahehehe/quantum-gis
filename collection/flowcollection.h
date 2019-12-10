@@ -23,6 +23,7 @@ public:
     flowcollection(string filename, bool with_headers, string delimeter);
     flowcollection(vector<flowdata>);
     flowcollection(string filename);
+    ~flowcollection();
     void Addflow(flowdata);
     void Deleteflow(int index);
     flowdata Getflow(int index);

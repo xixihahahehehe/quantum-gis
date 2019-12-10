@@ -69,7 +69,7 @@ void flow_viz::InitialColor()
     od_color=QColor::fromRgb(47,79,79);
     //base_polygon=QColor::fromRgb(54,78,104);
     base_polygon=QColor::fromRgb(50,50,50);
-
+    /*
     flow_color.push_back(QColor::fromRgb(255,222,173));
     flow_color.push_back(QColor::fromRgb(255,218,185));
     flow_color.push_back(QColor::fromRgb(255,160,122));
@@ -78,12 +78,17 @@ void flow_viz::InitialColor()
     flow_color.push_back(QColor::fromRgb(205,92,92));
     flow_color.push_back(QColor::fromRgb(178,34,34));
     flow_color.push_back(QColor::fromRgb(128,0,0));
-    /*
+    */
     for (int i=0;i<8;i++)
     {
         flow_color.push_back(QColor::fromRgb(86,149,246));
     }
-    */
+
+}
+
+double flow_viz::cal_dist(QPoint o_po, QPoint d_po)
+{
+    return sqrt(pow((o_po.x()-d_po.y()),2)+pow((o_po.y()-d_po.y()),2));
 }
 
 QColor flow_viz::cal_Flowcolor(double flow_weight)
@@ -106,10 +111,42 @@ QPoint flow_viz::Cal_MidPoint(QPoint o_point, QPoint d_point)
     return QPoint(floor(xmid),floor(ymid));
 }
 
-QPoint flow_viz::Cal_ArrowPoint(QPoint o_point, QPoint d_point)
+QPoint flow_viz::Cal_ArrowPoint(QPoint o_point,QPoint d_point,bool flag,double dist)
 {
-    return *(QPoint*)nullptr;
+    double angle=0.0;
+    if (o_point.x()==d_point.x())
+    {
+        if(o_point.y()>d_point.y())
+        {
+         angle=PI/2;
+        }
+        else
+        {
+         angle=PI/2*3;
+        }
+    }
+    else
+    {
 
+        double tan_od=(o_point.y()-d_point.y())/(o_point.x()-d_point.x());
+        angle=atan2((o_point.y()-d_point.y()),(o_point.x()-d_point.x()));
+        /*if (angle<0)
+        {
+            angle=angle+PI;
+        }
+        */
+    }
+    if (flag)
+    {
+        angle=angle+flow_angle/180.0*PI;
+    }
+    else
+    {
+        angle=angle-flow_angle/180.0*PI;
+    }
+    double tmp=dist*0.05*cos(angle);
+    QPoint o_arrow=QPoint(d_point.x()+dist*0.1*cos(angle),d_point.y()+dist*0.1*sin(angle));
+    return o_arrow;
 }
 
 void flow_viz::draw_basemap(QPainter *painter)
@@ -221,7 +258,18 @@ void flow_viz::draw_flow(QPainter *painter)
       painter->drawPath(tmpPath);
       OGRFeature::DestroyFeature(o_feature);
       OGRFeature::DestroyFeature(d_feature);
-
+      double dist=cal_dist(o_po,d_po);
+      QPoint arrow_o1=Cal_ArrowPoint(mid_po,d_po,true,dist);
+      QPoint arrow_o2=Cal_ArrowPoint(mid_po,d_po,false,dist);
+      QPainterPath arrow1_path;
+      QPainterPath arrow2_path;
+      //painter->setPen(QPen(QColor::fromRgb(255,0,0)));
+      arrow1_path.moveTo(arrow_o1);
+      arrow1_path.quadTo(Cal_MidPoint(arrow_o1,d_po),d_po);
+      painter->drawPath(arrow1_path);
+      arrow2_path.moveTo(arrow_o2);
+      arrow2_path.quadTo(Cal_MidPoint(arrow_o2,d_po),d_po);
+      painter->drawPath(arrow2_path);
     }
 }
 
@@ -269,17 +317,28 @@ void flow_viz::mousePressEvent(QMouseEvent *event)
     pos_y=event->y();
 }
 
-void flow_viz::mouseMoveEvent(QMouseEvent *event)
+void flow_viz::mouseMoveEvent(QMouseEvent *event,QPaintEvent *paint_event)
 {
     if ((event->buttons() & Qt::LeftButton) == Qt::LeftButton)
     {
-        qDebug()<<event->buttons();
+        //qDebug()<<event->buttons();
+        QPixmap tmpPixmap=QPixmap(ViewBox.width(),ViewBox.height());
+        tmpPixmap=this->grab(ViewBox);
+        tmpPixmap.save("C:\\Users\\Geosoft\\Desktop\\hair.png");
         int moveX=event->x()-pos_x;
         int moveY=event->y()-pos_y;
         ViewBox.moveTopLeft(QPoint(moveX,-moveY));
-        update();
+        QPainter *tmp_painter=new QPainter(this);
+        tmp_painter->eraseRect(rect());
+        tmp_painter->begin(this);
+        tmp_painter->setRenderHint(QPainter::SmoothPixmapTransform);
+        tmp_painter->drawPixmap(QPoint(ViewBox.left(),ViewBox.top()),tmpPixmap);
+        tmp_painter->end();
+        delete tmp_painter;
         pos_x=event->x();
         pos_y=event->y();
+        event->accept();
+        paint_event->accept();
     }
 
 }
@@ -287,12 +346,29 @@ void flow_viz::mouseMoveEvent(QMouseEvent *event)
 void flow_viz::mouseReleaseEvent(QMouseEvent *event)
 {
    setCursor(Qt::ArrowCursor);
+   int moveX=event->x()-pos_x;
+   int moveY=event->y()-pos_y;
+   ViewBox.moveTopLeft(QPoint(moveX,-moveY));
    flag_press=false;
    update();
 }
 
 void flow_viz::wheelEvent(QWheelEvent *event)
 {
+    double numDegrees = -event->delta() / 8.0;
+    double numSteps = numDegrees / 15.0;
+    double mouse_xd = event->x() / static_cast<double>(width());
+    double mouse_yd = event->y() / static_cast<double>(height());
+    if (event->orientation() == Qt::Vertical) {
+        double bounds_width = ViewBox.width();
+        double bounds_height = ViewBox.height();
+        ViewBox.setLeft(ViewBox.left()-numSteps * 0.05 * (event->x()-ViewBox.left()));
+        ViewBox.setTop(ViewBox.top()-numSteps * 0.05 * (event->y()-ViewBox.top()));
+        ViewBox.setWidth(ViewBox.width()*(1+numSteps * 0.05));
+        ViewBox.setHeight(ViewBox.height()*(1+numSteps*0.05));
+        event->accept();
+        this->update();
+    }
 
 }
 

@@ -83,6 +83,7 @@ MainWindow::~MainWindow()
     for(int i=0;i<myGDAlDatasets.size();i++)
         GDALClose(myGDAlDatasets[i]);
 
+    delete _flowviz;
 }
 
 

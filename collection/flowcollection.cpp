@@ -13,6 +13,11 @@ flowcollection::flowcollection(vector<flowdata> _flows)
     flows=_flows;
 }
 
+flowcollection::~flowcollection()
+{
+
+}
+
 int flowcollection::Countflow()
 {
     return flows.size();
