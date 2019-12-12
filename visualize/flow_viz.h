@@ -43,6 +43,7 @@ private:
     flowcollection *_flowcollection=nullptr;
 
     bool flag_press;
+    bool flag_move;
     int pos_x;
     int pos_y;
     double scroll_size=0.05;
@@ -55,6 +56,7 @@ private:
     double min_fwidth=0.5;
     double max_fwidth=2;
     int flow_angle=20;
+    QPixmap screen_map;
     QColor od_color;
     vector<QColor> flow_color;
     QColor base_line;
@@ -100,7 +102,7 @@ protected:
 
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent *event);
-    virtual void mouseMoveEvent(QMouseEvent *event,QPaintEvent *paint_event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void mouseDoubleClickEvent(QMouseEvent *event);
     virtual void wheelEvent(QWheelEvent *event);
 

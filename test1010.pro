@@ -147,8 +147,16 @@ else:unix:!macx|win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/lib/libgdal.a
 #INCLUDEPATH += $$PWD/../geos/include
 #DEPENDPATH += $$PWD/../geos/include
 
-win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../geos/lib/geos_d.lib
-else:unix:!macx|win32-g++: PRE_TARGETDEPS += $$PWD/../geos/lib/libgeos_d.a
+#win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../geos/lib/geos_d.lib
+#else:unix:!macx|win32-g++: PRE_TARGETDEPS += $$PWD/../geos/lib/libgeos_d.a
 
 DISTFILES += \
     src/prpack/prpack.inc
+
+unix:!macx|win32: LIBS += -LD:/gdal_debug_x64/igraph/lib/ -ligraph
+
+INCLUDEPATH += D:/gdal_debug_x64/igraph/include
+DEPENDPATH += D:/gdal_debug_x64/igraph/include
+
+win32:!win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/igraph/lib/igraph.lib
+else:unix:!macx|win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/igraph/lib/libigraph.a

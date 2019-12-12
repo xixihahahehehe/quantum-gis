@@ -43,6 +43,7 @@ void flow_viz::set_flowcollection(flowcollection *_fcollection)
     ViewBox.setRect(0,0,width(),height());
     InitialColor();
     flag_press=false;
+    flag_move=false;
 }
 
 void flow_viz::AutoComputeTransPara()
@@ -268,7 +269,7 @@ void flow_viz::draw_flow(QPainter *painter)
       arrow1_path.quadTo(Cal_MidPoint(arrow_o1,d_po),d_po);
       painter->drawPath(arrow1_path);
       arrow2_path.moveTo(arrow_o2);
-      arrow2_path.quadTo(Cal_MidPoint(arrow_o2,d_po),d_po);
+      arrow2_path.quadTo(Cal_MidPoint(d_po,arrow_o2),d_po);
       painter->drawPath(arrow2_path);
     }
 }
@@ -294,13 +295,23 @@ void flow_viz::paintEvent(QPaintEvent *)
     }
     base_polygon=QColor::fromRgb(r,g,b);
 */
-    _flowcollection->layerConnection->ResetReading();
     QPainter *_painter=new QPainter(this);
+    if (flag_move)
+    {
+       _painter->begin(this);
+       _painter->setRenderHint(QPainter::SmoothPixmapTransform);
+       _painter->drawPixmap(ViewBox,screen_map);
+       _painter->end();
+    }
+    else
+    {
+    _flowcollection->layerConnection->ResetReading();
     _painter->begin(this);
     _painter->setRenderHint(QPainter::Antialiasing);
     draw_basemap(_painter);
     draw_flow(_painter);
     _painter->end();
+    }
     //destroy(_painter);  //"destroys" data on a memory location which makes the object not usable,but the memory is still there for use(the object can be constructed again)
                           // call the destructor of the target function
     delete _painter;  //memory deallocated instead of pointer
@@ -317,28 +328,23 @@ void flow_viz::mousePressEvent(QMouseEvent *event)
     pos_y=event->y();
 }
 
-void flow_viz::mouseMoveEvent(QMouseEvent *event,QPaintEvent *paint_event)
+void flow_viz::mouseMoveEvent(QMouseEvent *event)
 {
     if ((event->buttons() & Qt::LeftButton) == Qt::LeftButton)
     {
         //qDebug()<<event->buttons();
-        QPixmap tmpPixmap=QPixmap(ViewBox.width(),ViewBox.height());
-        tmpPixmap=this->grab(ViewBox);
-        tmpPixmap.save("C:\\Users\\Geosoft\\Desktop\\hair.png");
+        screen_map=QPixmap(ViewBox.width(),ViewBox.height());
+        screen_map=this->grab(ViewBox);
+        //tmpPixmap.save("C:\\Users\\Geosoft\\Desktop\\hair.png");
         int moveX=event->x()-pos_x;
         int moveY=event->y()-pos_y;
-        ViewBox.moveTopLeft(QPoint(moveX,-moveY));
-        QPainter *tmp_painter=new QPainter(this);
-        tmp_painter->eraseRect(rect());
-        tmp_painter->begin(this);
-        tmp_painter->setRenderHint(QPainter::SmoothPixmapTransform);
-        tmp_painter->drawPixmap(QPoint(ViewBox.left(),ViewBox.top()),tmpPixmap);
-        tmp_painter->end();
-        delete tmp_painter;
+        ViewBox.moveTopLeft(QPoint(moveX+ViewBox.x(),-moveY+ViewBox.y()));
+        event->accept();
         pos_x=event->x();
         pos_y=event->y();
-        event->accept();
-        paint_event->accept();
+        flag_move=true;
+        this->update();
+        flag_move=false;
     }
 
 }
@@ -348,9 +354,11 @@ void flow_viz::mouseReleaseEvent(QMouseEvent *event)
    setCursor(Qt::ArrowCursor);
    int moveX=event->x()-pos_x;
    int moveY=event->y()-pos_y;
-   ViewBox.moveTopLeft(QPoint(moveX,-moveY));
+   ViewBox.moveTopLeft(QPoint(moveX+ViewBox.x(),-moveY+ViewBox.y()));
    flag_press=false;
-   update();
+   flag_move=false;
+   event->accept();
+   this->update();
 }
 
 void flow_viz::wheelEvent(QWheelEvent *event)
@@ -359,11 +367,13 @@ void flow_viz::wheelEvent(QWheelEvent *event)
     double numSteps = numDegrees / 15.0;
     double mouse_xd = event->x() / static_cast<double>(width());
     double mouse_yd = event->y() / static_cast<double>(height());
+    /*std::cout<<event->x()<<std::endl;
+    std::cout<<event->y()<<std::endl;*/
     if (event->orientation() == Qt::Vertical) {
         double bounds_width = ViewBox.width();
         double bounds_height = ViewBox.height();
-        ViewBox.setLeft(ViewBox.left()-numSteps * 0.05 * (event->x()-ViewBox.left()));
-        ViewBox.setTop(ViewBox.top()-numSteps * 0.05 * (event->y()-ViewBox.top()));
+        ViewBox.moveLeft(ViewBox.left()-numSteps *0.05 * (event->x()-ViewBox.left()));
+        ViewBox.moveTop(ViewBox.top()-numSteps  * 0.05 * (event->y()-ViewBox.top()));
         ViewBox.setWidth(ViewBox.width()*(1+numSteps * 0.05));
         ViewBox.setHeight(ViewBox.height()*(1+numSteps*0.05));
         event->accept();
