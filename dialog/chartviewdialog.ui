@@ -6,25 +6,65 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>512</width>
-    <height>367</height>
+    <width>741</width>
+    <height>357</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Distance Decay Parameter Fitting</string>
   </property>
   <widget class="QChartView" name="chartwidget" native="true">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>10</y>
-     <width>511</width>
-     <height>351</height>
+     <x>270</x>
+     <y>40</y>
+     <width>431</width>
+     <height>291</height>
     </rect>
    </property>
    <property name="autoFillBackground">
     <bool>false</bool>
    </property>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>30</y>
+     <width>221</width>
+     <height>301</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Fitting Equation</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="Equation_Edit">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Fitting Evaluation</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTextEdit" name="Evaluation_Edit">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <customwidgets>

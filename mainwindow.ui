@@ -104,7 +104,7 @@
   </action>
   <action name="action_chart">
    <property name="text">
-    <string>distance decay parameter interpolation</string>
+    <string>distance decay parameter fitting</string>
    </property>
   </action>
   <action name="actiongenerate_flow_collection">

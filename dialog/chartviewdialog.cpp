@@ -59,3 +59,14 @@ void ChartViewDialog::getdata(vector<vector<double> > res0)
 {
     res = res0;
 }
+void ChartViewDialog::setText()
+{
+    //res[0] -> x; res[1] -> y; res[2] -> {b_stat,a_stat,SSE,SSM,SST,R2}
+    double b = res[2][0];
+    double a = res[2][1];
+    double SSE =  res[2][2],SSM =  res[2][3],SST =  res[2][4],R2 =  res[2][5];
+    QString equation = QString("y = -%1x + %2").arg(b).arg(a);
+    QString evaluation = QString("SSE: %1\nSSM: %2\nSST: %3\nR2: %4").arg(SSE).arg(SSM).arg(SST).arg(R2);
+    ui->Equation_Edit->setText(equation);
+    ui->Evaluation_Edit->setText(evaluation);
+}
