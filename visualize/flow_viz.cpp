@@ -365,15 +365,14 @@ void flow_viz::wheelEvent(QWheelEvent *event)
 {
     double numDegrees = -event->delta() / 8.0;
     double numSteps = numDegrees / 15.0;
-    double mouse_xd = event->x() / static_cast<double>(width());
-    double mouse_yd = event->y() / static_cast<double>(height());
+    //double mouse_xd = event->x() / static_cast<double>(width());
+    //double mouse_yd = event->y() / static_cast<double>(height());
     /*std::cout<<event->x()<<std::endl;
     std::cout<<event->y()<<std::endl;*/
     if (event->orientation() == Qt::Vertical) {
-        double bounds_width = ViewBox.width();
-        double bounds_height = ViewBox.height();
-        ViewBox.moveLeft(ViewBox.left()-numSteps *0.05 * (event->x()-ViewBox.left()));
-        ViewBox.moveTop(ViewBox.top()-numSteps  * 0.05 * (event->y()-ViewBox.top()));
+        double moveX = event->x()-(1+numSteps*0.05)*(event->x()-ViewBox.left());
+        double moveY = event->y()-(1+numSteps*0.05)*(event->y()-ViewBox.top());
+        ViewBox.moveTopLeft(QPoint(moveX,moveY));
         ViewBox.setWidth(ViewBox.width()*(1+numSteps * 0.05));
         ViewBox.setHeight(ViewBox.height()*(1+numSteps*0.05));
         event->accept();
