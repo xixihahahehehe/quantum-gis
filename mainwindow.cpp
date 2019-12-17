@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     layercount=0;
 
     _leftbar=new MenuWidget(this);
+
     _leftbar->setMaximumWidth(200);
     this->addDockWidget(Qt::LeftDockWidgetArea,_leftbar,Qt::Vertical);
 
@@ -27,7 +28,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     _flowviz=new flow_viz(this);
     this->setCentralWidget(_flowviz);
+    _leftbar->_fviz=_flowviz;
     ui->statusbar->showMessage("aaaaa",0);
+
 
     //deal with signals and slots
 
@@ -463,27 +466,19 @@ void MainWindow::handlepalResults()
 // }
 void MainWindow::getMenu()
 {
-    od_list.clear();
-    flow_list.clear();
-    base_list.clear();
+    menu_odcollection.clear();
+    menu_odcollection.clear();
     std::list<OGRLayer *>::iterator it_map;
-    for (it_map=myLayers.begin();it_map!=myLayers.end();++it_map)
-    {
-        base_list<<(*it_map)->GetName();
-    }
+
     std::vector<ODcollection>::iterator it_OD;
     for (it_OD=ODcollections.begin();it_OD!=ODcollections.end();++it_OD)
     {
-        char chod[100];
-        strcpy(chod,(*it_OD).GetName().c_str());
-        od_list<<chod;
+        menu_odcollection.push_back(&(*it_OD));
     }
     std::vector<flowcollection>::iterator it_flow;
     for (it_flow=flowcollections.begin();it_flow!=flowcollections.end();++it_flow)
     {
-        char chod[100];
-        strcpy(chod,(*it_flow).GetName().c_str());
-        flow_list<<chod;
+        menu_flowcollection.push_back(&(*it_flow));
     }
 }
 
@@ -497,14 +492,17 @@ void MainWindow::updateForNewFiles()
     flow_selected.clear();
     base_selected.clear();
     //od_selected.push_back(od_list.size());
-    flow_selected.push_back(flow_list.size());
-    base_selected.push_back(base_list.size());
+    flow_selected.push_back(menu_flowcollection.size());
+    base_selected.push_back(myLayers.size());
 
     //update shapefile viz
     _flowviz->set_flowcollection(&flowcollections.back());
     _flowviz->update();
+    _flowviz->od_draw=false;
+    _flowviz->flow_draw=true;
+    _flowviz->map_draw=true;
     //update menu
-    _leftbar->update_menu(od_list,flow_list,base_list,od_selected,flow_selected,base_selected);
+    _leftbar->update_menu(menu_odcollection,menu_flowcollection,myLayers,od_selected,flow_selected,base_selected);
 }
 
 void MainWindow::updatePropertyTable()
@@ -535,3 +533,7 @@ void MainWindow::updatePropertyTable()
        _table->show();
 }
 
+void MainWindow::updateForMenu()
+{
+
+}

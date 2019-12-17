@@ -19,6 +19,9 @@ flow_viz::flow_viz(QWidget *parent) :
     _envelope=new OGREnvelope;
     m_originalWidth = this->width();
     m_originalHeight = this->height();
+    od_draw=false;
+    flow_draw=false;
+    map_draw=false;
     //setMouseTracking(true);
 }
 
@@ -28,6 +31,15 @@ flow_viz::~flow_viz()
     delete _flowcollection;
     delete _envelope;
     //delete flowcollection
+}
+
+void flow_viz::set_odcollection(ODcollection *_ocollection)
+{
+    if(_odcollection)
+    {
+        _odcollection=nullptr;
+    }
+    _odcollection=_ocollection;
 }
 
 void flow_viz::set_flowcollection(flowcollection *_fcollection)
@@ -67,7 +79,7 @@ void flow_viz::AutoComputeTransPara()
 void flow_viz::InitialColor()
 {
     base_line=QColor::fromRgb(100,100,100);
-    od_color=QColor::fromRgb(47,79,79);
+    od_color=QColor::fromRgb(255,215,0);
     //base_polygon=QColor::fromRgb(54,78,104);
     base_polygon=QColor::fromRgb(50,50,50);
     /*
@@ -308,8 +320,19 @@ void flow_viz::paintEvent(QPaintEvent *)
     _flowcollection->layerConnection->ResetReading();
     _painter->begin(this);
     _painter->setRenderHint(QPainter::Antialiasing);
-    draw_basemap(_painter);
-    draw_flow(_painter);
+    if(map_draw)
+    {
+        draw_basemap(_painter);
+    }
+    if(od_draw)
+    {
+        draw_OD(_painter);
+    }
+
+    if(flow_draw)
+    {
+        draw_flow(_painter);
+    }
     _painter->end();
     }
     //destroy(_painter);  //"destroys" data on a memory location which makes the object not usable,but the memory is still there for use(the object can be constructed again)
@@ -378,7 +401,6 @@ void flow_viz::wheelEvent(QWheelEvent *event)
         event->accept();
         this->update();
     }
-
 }
 
 void flow_viz::mouseDoubleClickEvent(QMouseEvent *event)

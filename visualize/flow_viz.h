@@ -37,10 +37,16 @@ public:
     explicit flow_viz(QWidget *parent = nullptr);
     ~flow_viz();
     void set_flowcollection(flowcollection *_fcollection);
+    void set_odcollection(ODcollection *_ocollection);
+    bool od_draw;
+    bool flow_draw;
+    bool map_draw;
 
 private:
     Ui::flow_viz *ui;
     flowcollection *_flowcollection=nullptr;
+    ODcollection *_odcollection=nullptr;
+    OGRLayer *_map=nullptr;
 
     bool flag_press;
     bool flag_move;

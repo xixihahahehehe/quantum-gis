@@ -48,6 +48,7 @@ SOURCES += \
     visualize/flow_viz.cpp \
 	visualize/flow_viz_opengl.cpp \
     visualize/menuwidget.cpp \
+    visualize/mini_map.cpp \
     visualize/propertytable.cpp \
     method/CalculateBtwId.cpp \
     method/DistanceDecayPara.cpp
@@ -86,6 +87,7 @@ HEADERS += \
     visualize/flow_viz.h \
 	visualize/flow_viz_opengl.h \
     visualize/menuwidget.h \
+    visualize/mini_map.h \
     visualize/propertytable.h \
     method/CalculateBtwId.h \
     method/DistanceDecayPara.h
@@ -100,6 +102,7 @@ FORMS += \
     visualize/flow_viz.ui \
 	visualize/flow_viz_opengl.ui \
     visualize/menuwidget.ui \
+    visualize/mini_map.ui \
     visualize/propertytable.ui
 
 LIBS += -lopengl32 -lglu32
