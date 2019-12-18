@@ -16,12 +16,15 @@ public:
     static OGRLayer * generateGrid(OGRPoint bottomleft,OGRPoint topright,double gridsize);
     static OGRLayer * generateGrid(OGRLayer * polygons);
     static double get_distance(OGRPoint point1, OGRPoint point2);
-    static string get_angle(OGRPoint point1, OGRPoint point2);
+    static double get_angle(OGRPoint point1, OGRPoint point2);
+    static double get_distance_proj(OGRPoint point1, OGRPoint point2);
+    static double get_angle_proj(OGRPoint point1, OGRPoint point2);
     //static double get_weight(double weight);
     static flowcollection generateFlowcollection(ODcollection,OGRLayer *);
-    
+    static double get_collection_distance_proj(int id1, int id2, OGRLayer* currentlyr);
+    static double get_collection_angle_proj(int id1, int id2, OGRLayer* currentlyr);
     static double get_collection_distance(int id1, int id2, OGRLayer* currentlyr);
-    static string get_collection_angle(int id1, int id2, OGRLayer* currentlyr);
+    static double get_collection_angle(int id1, int id2, OGRLayer* currentlyr);
 };
 
 #endif // AUXILIARY_FUNC_H

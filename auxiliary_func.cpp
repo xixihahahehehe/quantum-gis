@@ -1,6 +1,6 @@
 #include "auxiliary_func.h"
 #define PI                      3.141592654
-#define EARTH_RADIUS            6378.137        //地球近似半径
+#define EARTH_RADIUS            6378.137
 
 auxiliary_func::auxiliary_func()
 {
@@ -10,8 +10,7 @@ vector<string> auxiliary_func::split(const string &str, const string &delim)
 {
     vector<string> res;
     if("" == str) return res;
-    //先将要切割的字符串从string类型转换为char*类型
-    char * strs = new char[str.length() + 1] ; //不要忘了
+    char * strs = new char[str.length() + 1] ;
     strcpy(strs, str.c_str());
 
     char * d = new char[delim.length() + 1];
@@ -19,8 +18,8 @@ vector<string> auxiliary_func::split(const string &str, const string &delim)
 
     char *p = strtok(strs, d);
     while(p) {
-        string s = p; //分割得到的字符串转换为string类型
-        res.push_back(s); //存入结果数组
+        string s = p;
+        res.push_back(s);
         p = strtok(NULL, d);
     }
 
@@ -39,7 +38,7 @@ OGRLayer * auxiliary_func::generateGrid(OGRPoint bottomleft, OGRPoint topright, 
                     to_string(x+gridsize)+" "+to_string(y)+","+\
                     to_string(x+gridsize)+" "+to_string(y+gridsize)+","+\
                     to_string(x)+" "+to_string(y+gridsize)+"))";
-            //这一块 还有点问题
+
             //char * cc[2];
             //strcpy(cc[0],wkt.c_str());
             /*bb->importFromWkt(cc);
@@ -72,7 +71,7 @@ double auxiliary_func::get_collection_distance(int id1, int id2, OGRLayer *curre
     return dis;
 }
 
-string auxiliary_func::get_angle(OGRPoint point1, OGRPoint point2)
+double auxiliary_func::get_angle(OGRPoint point1, OGRPoint point2)
 {
     //vector <string> angle;
     struct geod_geodesic g;
@@ -83,22 +82,83 @@ string auxiliary_func::get_angle(OGRPoint point1, OGRPoint point2)
     geod_inverse(&g, point1.getX(), point1.getY(), point2.getX(), point2.getY(), &s12, &pazi1, &pazi2);
     //printf("%.3f\n", pazi1);
     //printf("%.3f\n", pazi2);
-    string str1=to_string(pazi1);
-    string str2=to_string(pazi2);
-    string str3=str1+","+str2;
-    return str3;
+//    string str1=to_string(pazi1);
+//    string str2=to_string(pazi2);
+//    string str3=str1+","+str2;
+//    return str3;
+    return pazi1;
 }
 
-string auxiliary_func::get_collection_angle(int id1, int id2, OGRLayer *currentlyr)
+double auxiliary_func::get_collection_angle(int id1, int id2, OGRLayer *currentlyr)
 {
     OGRPoint p[2];
     get_feature_byid(id1, &p[0], currentlyr, "centroid");
     get_feature_byid(id2, &p[1], currentlyr, "centroid");
-    string angle;
+    double angle;
     angle=get_angle(p[0], p[1]);
     return angle;
 }
 
+double auxiliary_func::get_distance_proj(OGRPoint point1, OGRPoint point2)
+{
+//     double radLat1 = point1.getX() * PI / 180.0;   //1˚ = π / 180
+//     double radLat2 = point2.getX() * PI / 180.0;   //1˚ = π / 180
+//     double a = radLat1 - radLat2;//
+//     double b = point1.getY() * PI / 180.0 - point2.getY() * PI / 180.0;  //
+//     double dst = 2 * asin((sqrt(pow(sin(a / 2), 2) + cos(radLat1) * cos(radLat2) * pow(sin(b / 2), 2))));
+//     dst = dst * EARTH_RADIUS;
+//     dst = round(dst * 10000) / 10000;
+//     return dst;
+    double x1=point1.getX();
+    double x2=point2.getX();
+    double y1=point1.getY();
+    double y2=point2.getY();
+    double dst=sqrt(((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)));
+    return dst;
+}
+
+double auxiliary_func::get_collection_distance_proj(int id1, int id2, OGRLayer *currentlyr)
+{
+     OGRPoint p[2];
+     get_feature_byid(id1, &p[0], currentlyr, "centroid");
+     get_feature_byid(id2, &p[1], currentlyr, "centroid");
+     double dis;
+     dis=get_distance_proj(p[0], p[1]);
+     return dis;
+}
+double auxiliary_func::get_angle_proj(OGRPoint point1, OGRPoint point2)
+{
+    double x = point1.getX() - point2.getX();//t d
+    double y = point1.getY() - point2.getY();//z y
+    double angle = -1;
+    if (y == 0 && x > 0) angle = 0;
+    if (y == 0 && x < 0) angle = 180;
+    if (x == 0 && y > 0) angle = 90;
+    if (x == 0 && y < 0) angle = 270;
+    if (angle == -1)
+    {
+        OGRPoint p1(point1.getX(),point2.getY());
+        OGRPoint p2(point2.getX(),point1.getY());
+        double dislat = get_distance_proj(p1, point2);
+        double dislng = get_distance_proj(p2, point2);
+        if (x > 0 && y > 0) angle = atan2(dislng, dislat) / PI * 180;
+        if (x < 0 && y > 0) angle = atan2(dislat, dislng) / PI * 180 + 90;
+        if (x < 0 && y < 0) angle = atan2(dislng, dislat) / PI * 180 + 180;
+        if (x > 0 && y < 0) angle = atan2(dislat, dislng) / PI * 180 + 270;
+    }
+//    string str1=to_string(angle);
+    return angle;
+}
+
+double auxiliary_func::get_collection_angle_proj(int id1, int id2, OGRLayer *currentlyr)
+{
+    OGRPoint p[2];
+    get_feature_byid(id1, &p[0], currentlyr, "centroid");
+    get_feature_byid(id2, &p[1], currentlyr, "centroid");
+    double angle;
+    angle=get_angle_proj(p[0], p[1]);
+    return angle;
+}
 
 struct tmpodcount
 {
