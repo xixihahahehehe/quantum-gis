@@ -2,8 +2,14 @@
 #include "ui_charts.h"
 #include <QChart>
 #include <QChartView>
+#include <mainwindow.h>
+#include <iostream>
+#include <cstdlib>
+#include <string>
+#include <map>
+using namespace std;
 
-Charts::Charts(QWidget *parent) :
+Charts::Charts(QWidget *parent, vector<double> *list) :
     QMainWindow(parent),
     ui(new Ui::Charts)
 {
@@ -11,7 +17,7 @@ Charts::Charts(QWidget *parent) :
 
     initChart();
     bulidChart();
-    prepareData();
+    prepareData(*list);
 }
 
 Charts::~Charts()
@@ -38,12 +44,11 @@ void Charts::initChart()
     chart->setBackgroundBrush(QBrush(QColor(248, 251, 255)));
 }
 
+
+
 void Charts::bulidChart()
 {
     QChart *chart = ui->chartView->chart();
-    chart->removeAllSeries();
-    chart->removeAxis(chart->axisX());
-    chart->removeAxis(chart->axisY());
 
     //spline chart
     QLineSeries *series0 = new QLineSeries();
@@ -90,26 +95,30 @@ void Charts::bulidChart()
     chart->addSeries(series3);
 
     //X
-    QCategoryAxis *axisX = new QCategoryAxis();
-    axisX->setMin(0);
-    axisX->setMax(16);
+    QValueAxis *axisX = new QValueAxis();
+    chart->addAxis(axisX,Qt::AlignBottom);
+    //Y
+    QValueAxis *axisY = new QValueAxis();
+    chart->addAxis(axisY,Qt::AlignLeft);
 
-    axisX->setStartValue(5);
+    series0->attachAxis(axisX);
+    series0->attachAxis(axisY);
+    series1->attachAxis(axisX);
+    series1->attachAxis(axisY);
+    series2->attachAxis(axisX);
+    series2->attachAxis(axisY);
+    series3->attachAxis(axisX);
+    series3->attachAxis(axisY);
 
-    axisX->setLabelsPosition(QCategoryAxis::AxisLabelsPositionOnValue);
-    for(int i=0; i<16; i++) {
-        QString str = QString("%1").arg(i+1);
-        axisX->append(str, i);
-    }
 
-    axisX->setTickCount(32);
+  //X
+    axisX->setLabelFormat("%d");
+    //axisX->setTickCount(10);
     axisX->setGridLineVisible(false);
     axisX->setMinorGridLineVisible(false);
 
     //Y
-    QValueAxis *axisY = new QValueAxis();
-    axisY->setRange(0, 100);
-    axisY->setTickCount(6);
+
     axisY->setLabelFormat("%.0f");
     axisY->setMinorTickCount(0);
 
@@ -117,54 +126,109 @@ void Charts::bulidChart()
     axisPen.setColor(QColor(231,238,251));
     axisPen.setStyle(Qt::DotLine);
     axisPen.setWidth(2);
-    axisY->setGridLinePen(axisPen);
-
-    chart->setAxisX(axisX, series0);
-    chart->setAxisY(axisY, series0);
-
-    chart->setAxisX(axisX, series1);
-    chart->setAxisY(axisY, series1);
-
-    chart->setAxisX(axisX, series2);
-    chart->setAxisY(axisY, series2);
-
-    chart->setAxisX(axisX, series3);
-    chart->setAxisY(axisY, series3);
+//    axisY->setGridLinePen(axisPen);
+    chart->legend()->setVisible(false);
 
 
 }
 
-
-void Charts::prepareData()
+void Charts::prepareData(vector<double> list)
 {
-    //QLineSeries *series0 = (QLineSeries *)ui->chartView->chart()->series().at(0);
-    //QScatterSeries *series2 = (QScatterSeries *)ui->chartView->chart()->series().at(2);
-    //QScatterSeries *series3 = (QScatterSeries *)ui->chartView->chart()->series().at(3);
+    QChart *chart = ui->chartView->chart();
     QLineSeries *series0 = (QLineSeries *)ui->chartView->chart()->series().at(0);
     QScatterSeries *series2 = (QScatterSeries *)ui->chartView->chart()->series().at(2);
     QScatterSeries *series3 = (QScatterSeries *)ui->chartView->chart()->series().at(3);
 
-    series0->clear();
-    series2->clear();
-    series3->clear();
+    vector<double> vec=list;
+    //sort(vec.begin(), vec.end());
+    int maxValue = *max_element(vec.begin(),vec.end());
+    int minValue = *min_element(vec.begin(),vec.end());
+    lmin = minValue;
+    lmax = maxValue;
 
-    qsrand(QTime::currentTime().second());
+    ListCount = 10;
+    lowerOutlierCount = 0;
+    upperOutlierCount = 0;
 
-    qreal t=0, y1, intv=1;
-    qreal rd;
-    int cnt=16;
-    for (int i=0; i<cnt; i++)
+    if(lmax-lmin<=ListCount)
     {
-        rd = (qrand() % 100);
-        y1=rd;
-        series0->append(t, y1);
-        series2->append(t, y1);
-        series3->append(t, y1);
+        ListWidth=1;
+        ListCount=(maxValue-minValue)/ListWidth+1;
 
-        t+=intv;
+    }
+    else
+    {
+         ListWidth = (maxValue-minValue)/ListCount;
     }
 
+    map<double, int> num_count;// empty
+
+    for (int i = 0; i <list.size(); i++)
+    {
+        int stat=ceil((list[i]-minValue)/ListWidth)+1;
+        if(stat < 0)
+        {
+            lowerOutlierCount++;
+        }
+        else if(stat > ListCount)
+        {
+            upperOutlierCount++;
+        }
+        else
+        {
+            int res=stat*ListWidth;
+             ++num_count[res];
+        }
+
+    }
+
+    map<double, int>::iterator iter;
+
+    double minx=1000000, miny=1000000, maxx=0, maxy=0;
+
+    for (iter = num_count.begin(); iter != num_count.end(); iter++)
+    {
+       cout << "[" << iter->first << "] = " << iter->second << endl;//iter->first:key,iter->second:value
+       if(iter->first<minx)
+       {
+           minx=iter->first;
+       }
+       if(iter->first>maxx)
+       {
+           maxx=iter->first;
+       }
+       if(iter->second<miny)
+       {
+           miny=iter->second;
+       }
+       if(iter->second>maxy)
+       {
+           maxy=iter->second;
+       }
+
+       series0->append(iter->first, iter->second);
+       series2->append(iter->first, iter->second);
+       series3->append(iter->first, iter->second);
+    }
+
+
+     //X
+     QValueAxis *axisX = new QValueAxis();
+     chart->addAxis(axisX,Qt::AlignBottom);
+     axisX->setTickCount(ListCount);
+     //Y
+     QValueAxis *axisY = new QValueAxis();
+     chart->addAxis(axisY,Qt::AlignLeft);
+
+
+    //cal
+    chart->axisX()->setRange(minx, maxx);
+    chart->axisY()->setRange(miny, maxy+1);
+
+
 }
+
+
 
 void Charts::slotPointHoverd(const QPointF &point, bool state)
 {
@@ -192,5 +256,4 @@ void Charts::slotPointHoverd(const QPointF &point, bool state)
 
 
 }
-
 
