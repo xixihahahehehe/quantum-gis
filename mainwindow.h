@@ -31,26 +31,11 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-private:
-    Ui::MainWindow *ui;
-    flow_viz *_flowviz;
-    MenuWidget *_leftbar;
-    //PropertyTable *_ptable;
-
-    list<flowcollection*> menu_flowcollection;
-    list<ODcollection*> menu_odcollection;
-
-    void updateForNewFiles();
-    void updateForMenu();
-    void updatePropertyTable();
-    void getMenu();
-
-    vector<int> od_selected;
-    vector<int> flow_selected;
-    vector<int> base_selected;
-
 public:
 
+    vector<double>distancelist;
+    vector<double>directionlist;
+    vector<double>weightlist;
     vector<GDALDataset*> myGDAlDatasets;
     vector<flowcollection> flowcollections;
 
@@ -83,8 +68,6 @@ public:
 public slots:
     void handleResults(const QString &);
     void handlepalResults();
-    //void receive_menu(vector<int>,vector<int>,vector<int>);
-
 signals:
     //void operate(const QString &);
     void operate(ODcollection od,OGRLayer * layer,flowcollection * fc);
@@ -109,13 +92,39 @@ private slots:
     void on_actionweight_triggered();
     void on_actionod_shp_triggered();
     void on_action_chart_triggered();
+    void on_actiondistance_proj_triggered();
 
-
+    void on_actiondirection_proj_triggered();
 
     void on_action_generate_a_flowgraph_triggered();
 
     void on_actionbind_flowcollection_with_basemap_triggered();
 
     void on_actiongraph_properties_triggered();
+
+    void on_actionDistance_triggered();
+
+    void on_actionDirection_triggered();
+
+    void on_actionWeight_triggered();
+
+private:
+    Ui::MainWindow *ui;
+    flow_viz *_flowviz;
+    MenuWidget *_leftbar;
+    //PropertyTable *_ptable;
+
+    QStringList od_list;
+    QStringList flow_list;
+    QStringList base_list;
+
+	
+	void updateForNewFiles();
+    void updatePropertyTable();
+    void getMenu();
+
+    vector<int> od_selected;
+    vector<int> flow_selected;
+    vector<int> base_selected;
 };
 #endif // MAINWINDOW_H

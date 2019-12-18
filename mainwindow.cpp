@@ -8,6 +8,10 @@
 #include <QTableWidget>
 #include <QMetaType>
 #include <time.h>
+#include <map>
+#include "charts/charts.h"
+#include "pietest/cpiewidget.h"
+#include "pietest/pietest.h"
 #include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -18,7 +22,6 @@ MainWindow::MainWindow(QWidget *parent)
     layercount=0;
 
     _leftbar=new MenuWidget(this);
-
     _leftbar->setMaximumWidth(200);
     this->addDockWidget(Qt::LeftDockWidgetArea,_leftbar,Qt::Vertical);
 
@@ -28,9 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     _flowviz=new flow_viz(this);
     this->setCentralWidget(_flowviz);
-    _leftbar->_fviz=_flowviz;
     ui->statusbar->showMessage("aaaaa",0);
-
 
     //deal with signals and slots
 
@@ -85,8 +86,8 @@ MainWindow::~MainWindow()
 
     for(int i=0;i<myGDAlDatasets.size();i++)
         GDALClose(myGDAlDatasets[i]);
-
     delete _flowviz;
+
 }
 
 
@@ -147,20 +148,19 @@ void MainWindow::on_actiondistance_triggered()
     //    printf("%.3f\n", s12 );
     //    printf("%.3f\n", pazi1 );
     //    printf("%.3f\n", pazi2 );
-    vector<string>distancelist;
     flowcollection a=flowcollections[0];
-    string str3;
+    //string str3;
     for(int i=0;i<a.Countflow();i++)
     {
         flowdata flow=a.Getflow(i);
         int od=flow.OID;
         int dd=flow.DID;
         double distance=auxiliary_func::get_collection_distance(od,dd,a.layerConnection);
-        string str_od=to_string(od);
-        string str_dd=to_string(dd);
-        string str_distance=to_string(distance);
-        str3=str_od+","+str_dd+","+str_distance;
-        distancelist.push_back(str3);
+//        string str_od=to_string(od);
+//        string str_dd=to_string(dd);
+//        string str_distance=to_string(distance);
+//        str3=str_od+","+str_dd+","+str_distance;
+        distancelist.push_back(distance);
     }
     for(int j=0;j<distancelist.size();j++)
     {
@@ -170,19 +170,20 @@ void MainWindow::on_actiondistance_triggered()
 
 void MainWindow::on_actiondirection_triggered()
 {
-    vector<string>directionlist;
+    vector<double>directionlist;
+
     flowcollection a=flowcollections[0];
-    string direction;
+   // string str3;
     for(int i=0;i<a.Countflow();i++)
     {
         flowdata flow=a.Getflow(i);
         int od=flow.OID;
         int dd=flow.DID;
-        direction=auxiliary_func::get_collection_angle(od,dd,a.layerConnection);
-        string str_od=to_string(od);
-        string str_dd=to_string(dd);
-        string str3=str_od+","+str_dd+","+direction;
-        directionlist.push_back(str3);
+        double direction = auxiliary_func::get_collection_angle(od,dd,a.layerConnection);
+//        string str_od=to_string(od);
+//        string str_dd=to_string(dd);
+//        string str3=str_od+","+str_dd+","+direction;
+        directionlist.push_back(direction);
     }
     for(int j=0;j<directionlist.size();j++)
     {
@@ -190,28 +191,81 @@ void MainWindow::on_actiondirection_triggered()
     }
 }
 
+
 void MainWindow::on_actionweight_triggered()
 {
     flowcollection a=flowcollections[0];
-    vector<string>weightlist;
+    vector<double>weight;
     for(int i=0;i<a.Countflow();i++)
     {
         flowdata flow=a.Getflow(i);
         int od=flow.OID;
         int dd=flow.DID;
         double weight=flow.weight;
-        string str_od=to_string(od);
-        string str_dd=to_string(dd);
-        string str_weight=to_string(weight);
-        string str3=str_od+","+str_dd+","+str_weight;
-        weightlist.push_back(str3);
+//        string str_od=to_string(od);
+//        string str_dd=to_string(dd);
+//        string str_weight=to_string(weight);
+//        string str3=str_od+","+str_dd+","+str_weight;
+        weightlist.push_back(weight);
     }
     for(int j=0;j<weightlist.size();j++)
     {
         cout<<weightlist[j]<<endl;
     }
+
 }
-#include <map>
+
+void MainWindow::on_actiondistance_proj_triggered()
+{
+    flowcollection a=flowcollections[0];
+//    vector<double>distance;
+    //string str3;
+    for(int i=0;i<a.Countflow();i++)
+    {
+        flowdata flow=a.Getflow(i);
+        int od=flow.OID;
+        int dd=flow.DID;
+        double distance=auxiliary_func::get_collection_distance_proj(od,dd,a.layerConnection);
+//        string str_od=to_string(od);
+//        string str_dd=to_string(dd);
+//        string str_distance=to_string(distance);
+//        str3=str_od+","+str_dd+","+str_distance;
+        distancelist.push_back(distance);
+    }
+    for(int j=0;j<distancelist.size();j++)
+    {
+        cout<<distancelist[j]<<endl;
+        //qDebug()<<distancelist[j]<<endl;
+    }
+
+}
+
+void MainWindow::on_actiondirection_proj_triggered()
+{
+
+    flowcollection a=flowcollections[0];
+    double direction;
+    //vector<double>direction;
+    for(int i=0;i<a.Countflow();i++)
+    {
+        flowdata flow=a.Getflow(i);
+        int od=flow.OID;
+        int dd=flow.DID;
+        direction=auxiliary_func::get_collection_angle_proj(od,dd,a.layerConnection);
+//        string str_od=to_string(od);
+//        string str_dd=to_string(dd);
+//        //string str_direction=to_string(direction);
+//        string str3=str_od+","+str_dd+","+direction;
+        directionlist.push_back(direction);
+    }
+    for(int j=0;j<directionlist.size();j++)
+    {
+        cout<<directionlist[j]<<endl;
+    }
+
+}
+
+
 //read flow
 void MainWindow::on_actionflow_triggered()
 {
@@ -226,6 +280,7 @@ void MainWindow::on_actionflow_triggered()
     else{
         qDebug()<<"取消";
     }
+
     //test net generation
     /*OGRLayer * aa= auxiliary_func::generateGrid(OGRPoint(0,0),OGRPoint(100,100),5);
     OGRFeature *poFeature;
@@ -466,19 +521,27 @@ void MainWindow::handlepalResults()
 // }
 void MainWindow::getMenu()
 {
-    menu_odcollection.clear();
-    menu_odcollection.clear();
+    od_list.clear();
+    flow_list.clear();
+    base_list.clear();
     std::list<OGRLayer *>::iterator it_map;
-
+    for (it_map=myLayers.begin();it_map!=myLayers.end();++it_map)
+    {
+        base_list<<(*it_map)->GetName();
+    }
     std::vector<ODcollection>::iterator it_OD;
     for (it_OD=ODcollections.begin();it_OD!=ODcollections.end();++it_OD)
     {
-        menu_odcollection.push_back(&(*it_OD));
+        char chod[100];
+        strcpy(chod,(*it_OD).GetName().c_str());
+        od_list<<chod;
     }
     std::vector<flowcollection>::iterator it_flow;
     for (it_flow=flowcollections.begin();it_flow!=flowcollections.end();++it_flow)
     {
-        menu_flowcollection.push_back(&(*it_flow));
+        char chod[100];
+        strcpy(chod,(*it_flow).GetName().c_str());
+        flow_list<<chod;
     }
 }
 
@@ -492,17 +555,14 @@ void MainWindow::updateForNewFiles()
     flow_selected.clear();
     base_selected.clear();
     //od_selected.push_back(od_list.size());
-    flow_selected.push_back(menu_flowcollection.size());
-    base_selected.push_back(myLayers.size());
+    flow_selected.push_back(flow_list.size());
+    base_selected.push_back(base_list.size());
 
     //update shapefile viz
     _flowviz->set_flowcollection(&flowcollections.back());
     _flowviz->update();
-    _flowviz->od_draw=false;
-    _flowviz->flow_draw=true;
-    _flowviz->map_draw=true;
     //update menu
-    _leftbar->update_menu(menu_odcollection,menu_flowcollection,myLayers,od_selected,flow_selected,base_selected);
+    _leftbar->update_menu(od_list,flow_list,base_list,od_selected,flow_selected,base_selected);
 }
 
 void MainWindow::updatePropertyTable()
@@ -533,7 +593,30 @@ void MainWindow::updatePropertyTable()
        _table->show();
 }
 
-void MainWindow::updateForMenu()
-{
 
+void MainWindow::on_actionDistance_triggered()
+{
+    cout<<distancelist.size();
+    Charts *c=new Charts(this, &distancelist);
+        c->show();
+//    PieForm *p =new PieForm(this, &distancelist);
+//    p->show();
+
+}
+
+void MainWindow::on_actionDirection_triggered()
+{
+//    Charts *c=new Charts(this, &directionlist);
+//    c->show();
+    pietest *p =new pietest(this, &directionlist);
+    p->show();
+
+}
+
+void MainWindow::on_actionWeight_triggered()
+{
+//    Charts *c=new Charts(this, &weightlist);
+//    c->show();
+    pietest *p =new pietest(this, &weightlist);
+    p->show();
 }
