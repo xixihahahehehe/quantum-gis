@@ -45,6 +45,8 @@
     <addaction name="actiondistance"/>
     <addaction name="actiondirection"/>
     <addaction name="actionweight"/>
+    <addaction name="actiondistance_proj"/>
+    <addaction name="actiondirection_proj"/>
    </widget>
    <widget class="QMenu" name="menustatistics">
     <property name="title">
@@ -52,6 +54,9 @@
     </property>
     <addaction name="actiongraph_properties"/>
     <addaction name="action_chart"/>
+    <addaction name="actionDistance"/>
+    <addaction name="actionDirection"/>
+    <addaction name="actionWeight"/>
    </widget>
    <widget class="QMenu" name="menuPrepocessing">
     <property name="title">
@@ -104,7 +109,7 @@
   </action>
   <action name="action_chart">
    <property name="text">
-    <string>distance decay parameter fitting</string>
+    <string>distance decay parameter interpolation</string>
    </property>
   </action>
   <action name="actiongenerate_flow_collection">
@@ -125,6 +130,31 @@
   <action name="actiongraph_properties">
    <property name="text">
     <string>graph properties</string>
+   </property>
+  </action>
+  <action name="actiondistance_proj">
+   <property name="text">
+    <string>distance_proj</string>
+   </property>
+  </action>
+  <action name="actiondirection_proj">
+   <property name="text">
+    <string>direction_proj</string>
+   </property>
+  </action>
+  <action name="actionDistance">
+   <property name="text">
+    <string>Distance</string>
+   </property>
+  </action>
+  <action name="actionDirection">
+   <property name="text">
+    <string>Direction</string>
+   </property>
+  </action>
+  <action name="actionWeight">
+   <property name="text">
+    <string>Weight</string>
    </property>
   </action>
  </widget>
