@@ -2,6 +2,11 @@ QT       += core gui
 QT       += opengl
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 QT += charts
+CONFIG += qwt
+DEFINES += QT_DLL QWT_DLL
+LIBS += -L"D:\Qt\Qt5.12.5\build-qwt-Desktop_Qt_5_12_5_MSVC2017_64bit-Debug\lib" -lqwtd
+LIBS += -L"D:\Qt\Qt5.12.5\build-qwt-Desktop_Qt_5_12_5_MSVC2017_64bit-Debug\lib" -lqwt
+INCLUDEPATH += D:\Qt\Qt5.12.5\5.12.5\msvc2017_64\include\qwt
 
 CONFIG += c++11
 
@@ -18,8 +23,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-	arrow.cpp \
+    arrow.cpp \
     auxiliary_func.cpp \
+    charts/QWChartView.cpp \
+    charts/charts.cpp \
     collection/flowcollection.cpp \
     collection/odcollection.cpp \
     collection/flowgraph.cpp \
@@ -34,6 +41,8 @@ SOURCES += \
     mainwindow.cpp \
     mainwindow_graphrelated.cpp \
     method/histogram.cpp \
+    pietest/cpiewidget.cpp \
+    pietest/pietest.cpp \
     src/prpack.cpp \
     src/prpack/prpack_base_graph.cpp \
     src/prpack/prpack_igraph_graph.cpp \
@@ -46,9 +55,8 @@ SOURCES += \
     src/prpack/prpack_utils.cpp \
     threads/workers.cpp \
     visualize/flow_viz.cpp \
-	visualize/flow_viz_opengl.cpp \
+    visualize/flow_viz_opengl.cpp \
     visualize/menuwidget.cpp \
-    visualize/mini_map.cpp \
     visualize/propertytable.cpp \
     method/CalculateBtwId.cpp \
     method/DistanceDecayPara.cpp
@@ -56,6 +64,8 @@ SOURCES += \
 HEADERS += \
     arrow.h \
     auxiliary_func.h \
+    charts/QWChartView.h \
+    charts/charts.h \
     collection/flowcollection.h \
     collection/odcollection.h \
     collection/flowgraph.h \
@@ -68,6 +78,8 @@ HEADERS += \
     geometries/oddata.h \
     mainwindow.h \
     method/histogram.h \
+    pietest/cpiewidget.h \
+    pietest/pietest.h \
     src/prpack.h \
     src/prpack/prpack.h \
     src/prpack/prpack_base_graph.h \
@@ -85,24 +97,24 @@ HEADERS += \
     src/prpack/prpack_utils.h \
     threads/workers.h \
     visualize/flow_viz.h \
-	visualize/flow_viz_opengl.h \
+    visualize/flow_viz_opengl.h \
     visualize/menuwidget.h \
-    visualize/mini_map.h \
     visualize/propertytable.h \
     method/CalculateBtwId.h \
     method/DistanceDecayPara.h
 
 FORMS += \
+    charts/charts.ui \
     dialog/bindingdialog.ui \
     dialog/chartviewdialog.ui \
     dialog/gen_graph_dialog.ui \
     dialog/graphexploredlg.ui \
     dialog/open_odshp.ui \
     mainwindow.ui \
+    pietest/pietest.ui \
     visualize/flow_viz.ui \
-	visualize/flow_viz_opengl.ui \
+    visualize/flow_viz_opengl.ui \
     visualize/menuwidget.ui \
-    visualize/mini_map.ui \
     visualize/propertytable.ui
 
 LIBS += -lopengl32 -lglu32
@@ -113,53 +125,54 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 
-unix:!macx|win32: LIBS += -LD:/gdal_debug_x64/lib/ -lgdal
+#unix:!macx|win32: LIBS += -LD:/gdal_debug_x64/lib/ -lgdal
+
+#INCLUDEPATH += D:/gdal_debug_x64/include
+#DEPENDPATH += D:/gdal_debug_x64/include
+
+#win32:!win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/lib/gdal.lib
+#else:unix:!macx|win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/lib/libgdal.a
+
+win32: LIBS += -LD:/gdal_debug_x64/lib/ -lgdal
 
 INCLUDEPATH += D:/gdal_debug_x64/include
 DEPENDPATH += D:/gdal_debug_x64/include
 
 win32:!win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/lib/gdal.lib
-else:unix:!macx|win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/lib/libgdal.a
+else:win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/lib/libgdal.a
 
-#win32: LIBS += -L$$PWD/../gdal_debug_x64/lib/ -lgdal
+win32: LIBS += -LD:/GEOS/lib/ -lgeos_c
 
-#INCLUDEPATH += $$PWD/../gdal_debug_x64/include
-#DEPENDPATH += $$PWD/../gdal_debug_x64/include
+INCLUDEPATH += D:/GEOS/include
+DEPENDPATH += D:/GEOS/include
 
-#win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../gdal_debug_x64/lib/gdal.lib
-#else:win32-g++: PRE_TARGETDEPS += $$PWD/../gdal_debug_x64/lib/libgdal.a
+win32:!win32-g++: PRE_TARGETDEPS += D:/GEOS/lib/geos_c.lib
+else:win32-g++: PRE_TARGETDEPS += D:/GEOS/lib/libgeos_c.a
 
-#win32: LIBS += -L$$PWD/../OSGeo4W/lib/ -lproj_6_1_d
+win32: LIBS += -LD:/GEOS/lib/ -llibgeos
 
-#INCLUDEPATH += $$PWD/../OSGeo4W/include
-#DEPENDPATH += $$PWD/../OSGeo4W/include
+INCLUDEPATH += D:/GEOS/include
+DEPENDPATH += D:/GEOS/include
 
-#win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../OSGeo4W/lib/proj_6_1_d.lib
-#else:win32-g++: PRE_TARGETDEPS += $$PWD/../OSGeo4W/lib/libproj_6_1_d.a
+win32:!win32-g++: PRE_TARGETDEPS += D:/GEOS/lib/libgeos.lib
+else:win32-g++: PRE_TARGETDEPS += D:/GEOS/lib/liblibgeos.a
 
-#win32: LIBS += -L$$PWD/../igraph/lib/ -ligraph
+win32: LIBS += -LD:/igraph/lib/ -ligraph
 
-#INCLUDEPATH += $$PWD/../igraph/include
-#DEPENDPATH += $$PWD/../igraph/include
+INCLUDEPATH += D:/igraph/include
+DEPENDPATH += D:/igraph/include
 
-#win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../igraph/lib/igraph.lib
-#else:win32-g++: PRE_TARGETDEPS += $$PWD/../igraph/lib/libigraph.a
+win32:!win32-g++: PRE_TARGETDEPS += D:/igraph/lib/igraph.lib
+else:win32-g++: PRE_TARGETDEPS += D:/igraph/lib/libigraph.a
 
-#unix:!macx|win32: LIBS += -L$$PWD/../geos/lib/ -lgeos_d
+win32: LIBS += -LD:/OSGeo4W/lib/ -lproj_6_1_d
 
-#INCLUDEPATH += $$PWD/../geos/include
-#DEPENDPATH += $$PWD/../geos/include
+INCLUDEPATH += D:/OSGeo4W/include
+DEPENDPATH += D:/OSGeo4W/include
 
-#win32:!win32-g++: PRE_TARGETDEPS += $$PWD/../geos/lib/geos_d.lib
-#else:unix:!macx|win32-g++: PRE_TARGETDEPS += $$PWD/../geos/lib/libgeos_d.a
+win32:!win32-g++: PRE_TARGETDEPS += D:/OSGeo4W/lib/proj_6_1_d.lib
+else:win32-g++: PRE_TARGETDEPS += D:/OSGeo4W/lib/libproj_6_1_d.a
+
 
 DISTFILES += \
     src/prpack/prpack.inc
-
-unix:!macx|win32: LIBS += -LD:/gdal_debug_x64/igraph/lib/ -ligraph
-
-INCLUDEPATH += D:/gdal_debug_x64/igraph/include
-DEPENDPATH += D:/gdal_debug_x64/igraph/include
-
-win32:!win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/igraph/lib/igraph.lib
-else:unix:!macx|win32-g++: PRE_TARGETDEPS += D:/gdal_debug_x64/igraph/lib/libigraph.a
