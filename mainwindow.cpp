@@ -594,6 +594,7 @@ void MainWindow::updatePropertyTable()
 }
 
 
+
 void MainWindow::on_actionDistance_triggered()
 {
     cout<<distancelist.size();

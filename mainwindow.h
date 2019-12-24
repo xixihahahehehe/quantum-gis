@@ -108,6 +108,7 @@ private slots:
 
     void on_actionWeight_triggered();
 
+
 private:
     Ui::MainWindow *ui;
     flow_viz *_flowviz;
@@ -117,9 +118,9 @@ private:
     QStringList od_list;
     QStringList flow_list;
     QStringList base_list;
-
 	
 	void updateForNewFiles();
+    void updateForMenu();
     void updatePropertyTable();
     void getMenu();
 
