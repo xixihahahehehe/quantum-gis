@@ -594,7 +594,6 @@ void MainWindow::updatePropertyTable()
 }
 
 
-
 void MainWindow::on_actionDistance_triggered()
 {
     cout<<distancelist.size();
@@ -621,3 +620,4 @@ void MainWindow::on_actionWeight_triggered()
     pietest *p =new pietest(this, &weightlist);
     p->show();
 }
+
