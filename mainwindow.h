@@ -49,10 +49,10 @@ public:
     //workcontrol aa;
     //workers * worker;
 
-
+    int usefulthreadnum;
     //threads
     QThread workerThread;
-    QThread workerThreads[4];
+    QThread workerThreads[6];
 
     //shared data
     //QMutex mutexaa;
@@ -75,6 +75,8 @@ signals:
     void operate2(ODcollection,OGRLayer *,int,int,std::map<workers::tmpodcount,int> *,volatile int *);
     void operate3(ODcollection,OGRLayer *,int,int,std::map<workers::tmpodcount,int> *,volatile int *);
     void operate4(ODcollection,OGRLayer *,int,int,std::map<workers::tmpodcount,int> *,volatile int *);
+    void operate5(ODcollection,OGRLayer *,int,int,std::map<workers::tmpodcount,int> *,volatile int *);
+    void operate6(ODcollection,OGRLayer *,int,int,std::map<workers::tmpodcount,int> *,volatile int *);
 
 private slots:
     void on_actiontxt_triggered();

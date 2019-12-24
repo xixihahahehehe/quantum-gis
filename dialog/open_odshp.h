@@ -19,6 +19,7 @@ public:
 
     QString get_od_filename();
     QString get_shp_filename();
+    int threadnum;
 
 private slots:
     void on_od_pushButton_clicked();

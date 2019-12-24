@@ -51,9 +51,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(worker,&workers::resultReady,this,&MainWindow::handleResults);
     workerThread.start();
 
-    workers * workersaa[4];
+    workers * workersaa[6];
     //multi qthreads
-    for (int i=0;i<4;i++)
+    for (int i=0;i<6;i++)
     {
         workersaa[i]=new workers;
         workersaa[i]->moveToThread(&workerThreads[i]);
@@ -64,7 +64,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this,&MainWindow::operate2,workersaa[1],&workers::paldoWork);
     connect(this,&MainWindow::operate3,workersaa[2],&workers::paldoWork);
     connect(this,&MainWindow::operate4,workersaa[3],&workers::paldoWork);
-    for (int i=0;i<4;i++)
+    connect(this,&MainWindow::operate5,workersaa[4],&workers::paldoWork);
+    connect(this,&MainWindow::operate6,workersaa[5],&workers::paldoWork);
+    for (int i=0;i<6;i++)
     {
         workerThreads[i].start();
     }
@@ -78,7 +80,7 @@ MainWindow::~MainWindow()
     delete ui;
     workerThread.quit();
     workerThread.wait();
-    for (int i=0;i<4;i++)
+    for (int i=0;i<6;i++)
     {
         workerThreads[i].quit();
         workerThreads[i].wait();
@@ -305,6 +307,7 @@ void MainWindow::on_actionod_shp_triggered()
         fileName=open->get_od_filename();
         QString fileName2;
         fileName2=open->get_shp_filename();
+
         string cFileName=fileName.toStdString();
         string cFileName2=fileName2.toStdString();
         /*QString fileName;
@@ -328,21 +331,6 @@ void MainWindow::on_actionod_shp_triggered()
             exit( 1 );
         }
         myGDAlDatasets.push_back(poDS);
-
-        GDALDataset *poDS2;
-        poDS2 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
-        myGDAlDatasets.push_back(poDS2);
-        GDALDataset *poDS3;
-        poDS3 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
-        myGDAlDatasets.push_back(poDS3);
-        GDALDataset *poDS4;
-        poDS4= (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
-        myGDAlDatasets.push_back(poDS4);
-
-        OGRLayer *tmplayer=poDS->GetLayer(0);
-        OGRLayer *tmplayer2=poDS2->GetLayer(0);
-        OGRLayer *tmplayer3=poDS3->GetLayer(0);
-        OGRLayer *tmplayer4=poDS4->GetLayer(0);
         /*int aaa=sizeof(tmplayer);
         string hehe=to_string(aaa);
         QString haha=QString::fromStdString(hehe);
@@ -350,7 +338,7 @@ void MainWindow::on_actionod_shp_triggered()
         //OGRLayer * tmplayer2=poDS->CopyLayer(tmplayer,tmplayer->GetName());
         //OGRLayer * tmplayer3=poDS->CopyLayer(tmplayer,tmplayer->GetName());
         //OGRLayer * tmplayer4=poDS->CopyLayer(tmplayer,tmplayer->GetName());
-
+        OGRLayer *tmplayer=poDS->GetLayer(0);
         myLayers.push_back(tmplayer);
         ODcollections.push_back(tmpodc);
         //cut from here
@@ -362,17 +350,76 @@ void MainWindow::on_actionod_shp_triggered()
         //emit operate(tmpodc,tmplayer,&flowcollections[index]);
 
         //ui->statusbar->showMessage("working",0);
-        ui->statusbar->showMessage("working");
+
         //eee.ODconnection=&tmpodc;
         finishsignal=0;
-        starttime=clock();
+
         //multi qthreads
         int odcount=tmpodc.CountOD();
-        int numperthread=odcount/4;
-        emit operate1(tmpodc,tmplayer,numperthread*0,numperthread*1,&sharedmap,&datauseable);
-        emit operate2(tmpodc,tmplayer2,numperthread*1,numperthread*2,&sharedmap,&datauseable);
-        emit operate3(tmpodc,tmplayer3,numperthread*2,numperthread*3,&sharedmap,&datauseable);
-        emit operate4(tmpodc,tmplayer4,numperthread*3,odcount,&sharedmap,&datauseable);
+        int usethreadnum=open->threadnum;
+        usefulthreadnum=usethreadnum;
+        int numperthread=odcount/usethreadnum;
+
+        if(usethreadnum>=1){
+            emit operate1(tmpodc,tmplayer,numperthread*0,numperthread*1,&sharedmap,&datauseable);
+        }
+        if(usethreadnum>=2){
+            GDALDataset *poDS2;
+            poDS2 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+            myGDAlDatasets.push_back(poDS2);
+            OGRLayer *tmplayer2=poDS2->GetLayer(0);
+            if(usethreadnum==2){
+                emit operate2(tmpodc,tmplayer2,numperthread*1,odcount,&sharedmap,&datauseable);
+            }
+            else{
+                emit operate2(tmpodc,tmplayer2,numperthread*1,numperthread*2,&sharedmap,&datauseable);
+            }
+        }
+        if(usethreadnum>=3){
+            GDALDataset *poDS3;
+            poDS3 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+            myGDAlDatasets.push_back(poDS3);
+            OGRLayer *tmplayer3=poDS3->GetLayer(0);
+            if(usethreadnum==3){
+                emit operate3(tmpodc,tmplayer3,numperthread*2,odcount,&sharedmap,&datauseable);
+            }
+            else{
+                emit operate3(tmpodc,tmplayer3,numperthread*2,numperthread*3,&sharedmap,&datauseable);
+            }
+        }
+        if(usethreadnum>=4){
+            GDALDataset *poDS4;
+            poDS4 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+            myGDAlDatasets.push_back(poDS4);
+            OGRLayer *tmplayer4=poDS4->GetLayer(0);
+            if(usethreadnum==4){
+                emit operate4(tmpodc,tmplayer4,numperthread*3,odcount,&sharedmap,&datauseable);
+            }
+            else{
+                emit operate4(tmpodc,tmplayer4,numperthread*3,numperthread*4,&sharedmap,&datauseable);
+            }
+        }
+        if(usethreadnum>=5){
+            GDALDataset *poDS5;
+            poDS5 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+            myGDAlDatasets.push_back(poDS5);
+            OGRLayer *tmplayer5=poDS5->GetLayer(0);
+            if(usethreadnum==5){
+                emit operate5(tmpodc,tmplayer5,numperthread*4,odcount,&sharedmap,&datauseable);
+            }
+            else{
+                emit operate5(tmpodc,tmplayer5,numperthread*4,numperthread*5,&sharedmap,&datauseable);
+            }
+        }
+        if(usethreadnum>=6){
+            GDALDataset *poDS6;
+            poDS6 = (GDALDataset*) GDALOpenEx( c, GDAL_OF_VECTOR, NULL, NULL, NULL );
+            myGDAlDatasets.push_back(poDS6);
+            OGRLayer *tmplayer6=poDS6->GetLayer(0);
+            emit operate6(tmpodc,tmplayer6,numperthread*5,odcount,&sharedmap,&datauseable);
+        }
+        ui->statusbar->showMessage("working");
+        starttime=clock();
         } else {
 
     }
@@ -435,7 +482,7 @@ void MainWindow::handlepalResults()
 {
     //QMessageBox::information(this,"aaaa","eeeee");
     finishsignal++;
-    if(finishsignal<4)
+    if(finishsignal<usefulthreadnum)
     {
         return;
     }

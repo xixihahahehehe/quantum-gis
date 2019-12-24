@@ -32,6 +32,7 @@ void open_odshp::on_pushButton_clicked()
 {
     _od_filename=ui->od_comboBox->currentText();
     _shp_filename=ui->shp_comboBox->currentText();
+    threadnum=ui->comboBox->currentIndex()+1;
     this->close();
 }
 
@@ -50,4 +51,5 @@ void open_odshp::on_buttonBox_accepted()
 {
     _od_filename=ui->od_comboBox->currentText();
     _shp_filename=ui->shp_comboBox->currentText();
+    threadnum=ui->comboBox->currentIndex()+1;
 }
