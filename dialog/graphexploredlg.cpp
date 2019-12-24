@@ -11,7 +11,10 @@ GraphExploreDlg::GraphExploreDlg(QWidget *parent) :
 	splitterMain->addWidget(ui->chartwidget);
 	splitterMain->setStretchFactor(1, 1);
 	setCentralWidget(splitterMain);
-
+    ui->graph_comboBx->clear();
+    QStringList qlist;
+    qlist<<"bar"<<"line";
+    ui->graph_comboBx->addItems(qlist);
 
 
 }
@@ -159,24 +162,39 @@ void GraphExploreDlg::on_classes_comboBx_currentIndexChanged(const QString &arg1
         histogram ->ResetHistogram(classes,-1);
         QChart *chart = mChartView->chart();
         chart->removeAllSeries();
-
-        QBarSeries *series = new QBarSeries(chart);
+        int graph_type = ui->graph_comboBx->currentIndex();
         vector<int> v_hist;
         histogram->getHistVec(v_hist);
-        QBarSet *set0 = new QBarSet(ui->property_comboBx->currentText());
-        for (int i = 0; i < v_hist.size(); i++)
+        if(graph_type==0)
         {
-            *set0 << v_hist[i];
+            QBarSeries *series = new QBarSeries(chart);
+            QBarSet *set0 = new QBarSet(ui->property_comboBx->currentText());
+            for (int i = 0; i < v_hist.size(); i++)
+            {
+                *set0 << v_hist[i];
+            }
+            series->append(set0);
+            chart->addSeries(series);
+            connect(series, SIGNAL(hovered(bool, int, QBarSet*)), this, SLOT(sltTooltip(bool, int, QBarSet*)));
+            ui->interval_comboBx->setCurrentText(QString::number((int)histogram->getBinWidth()));
+         }
+        else if(graph_type==1)
+        {
+            QLineSeries *series = new QLineSeries();
+            series->setName(ui->property_comboBx->currentText());
+            for (int i = 0; i < v_hist.size(); i++)
+            {
+                series->append(QPoint(i, v_hist[i]));
+            }
+            chart->addSeries(series);
         }
-        series->append(set0);
 
-        chart->addSeries(series);
-		int maxValue = *max_element(v_hist.begin(), v_hist.end());
-		chart->axisY()->setRange(0, maxValue);
-        connect(series, SIGNAL(hovered(bool, int, QBarSet*)), this, SLOT(sltTooltip(bool, int, QBarSet*)));
-        ui->interval_comboBx->setCurrentText(QString::number((int)histogram->getBinWidth()));
+        int maxValue = *max_element(v_hist.begin(), v_hist.end());
+        chart->axisY()->setRange(0, maxValue);
         qDebug()<<histogram->getBinWidth();
         hasreset=0;
+
+
     }
 }
 
@@ -191,21 +209,35 @@ void GraphExploreDlg::on_interval_comboBx_currentIndexChanged(const QString &arg
         histogram ->ResetHistogram(-1,interval);
         QChart *chart = mChartView->chart();
         chart->removeAllSeries();
-
-        QBarSeries *series = new QBarSeries(chart);
+        int graph_type = ui->graph_comboBx->currentIndex();
         vector<int> v_hist;
         histogram->getHistVec(v_hist);
-        QBarSet *set0 = new QBarSet(ui->property_comboBx->currentText());
-        for (int i = 0; i < v_hist.size(); i++)
+        if(graph_type==0)
         {
-            *set0 << v_hist[i];
+            QBarSeries *series = new QBarSeries(chart);
+            QBarSet *set0 = new QBarSet(ui->property_comboBx->currentText());
+            for (int i = 0; i < v_hist.size(); i++)
+            {
+                *set0 << v_hist[i];
+            }
+            series->append(set0);
+            chart->addSeries(series);
+            connect(series, SIGNAL(hovered(bool, int, QBarSet*)), this, SLOT(sltTooltip(bool, int, QBarSet*)));
         }
-        series->append(set0);
-		
-        chart->addSeries(series);
+       else if(graph_type==1)
+       {
+           QLineSeries *series = new QLineSeries();
+           series->setName(ui->property_comboBx->currentText());
+           for (int i = 0; i < v_hist.size(); i++)
+           {
+               *series<<QPoint(i, v_hist[i]);
+           }
+           chart->addSeries(series);
+       }
+
 		int maxValue = *max_element(v_hist.begin(), v_hist.end());
 		chart->axisY()->setRange(0, maxValue);
-        connect(series, SIGNAL(hovered(bool, int, QBarSet*)), this, SLOT(sltTooltip(bool, int, QBarSet*)));
+
         ui->classes_comboBx->setCurrentText(QString::number(histogram->bins()));
         hasreset=0;
     }
